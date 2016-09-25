@@ -1,0 +1,18 @@
+
+PS1/ps1.pdf
+
+*.pdf
+
+*.dta
+
+Replication ex/first_data_extract.dat
+
+*.xml
+
+Replication ex/.DS_Store
+
+*.xlsx
+
+*.docx
+
+*.smcl

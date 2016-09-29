@@ -99,18 +99,27 @@ gen anyedu = any*educ2004
 reg got any educ2004 anyedu
 /* d = 0.001 and is not sig. */
 
-/** PART 4 RANDOM SUBSAMPLE **/
+/** PART 6 RANDOM SUBSAMPLE **/
 /* Q14: RANDOM SAMPLE INDICATOR */
 generate random = runiform()
 sort random
 generate insample = _n <= 1000 
 
 keep if insample ==1
-save randomhiv
+save randomhiv, replace
 
 clear all
 prog drop _all
-use "$datadir/Thornton HIV Testing Data.dta", clear
+use "$datadir/randomhiv.dta", clear
 
-reg got any /* b = 0.4506 and is sig. nearly same as above. */
+reg got any /* b = 0.4546 and is sig. nearly same as above. */
 
+
+/** PART 7 SAMPLE SIZE **/
+clear all
+prog drop _all
+use "$datadir/hivdata_elig.dta", clear
+
+sum any 
+oneway numcond any, tab
+power twomeans 0.83471074 1.0184332, power(0.8) a(0.05) nrat(1) sd1(2.4164268) sd2(2.1662179)

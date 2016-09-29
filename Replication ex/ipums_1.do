@@ -15,3 +15,5 @@ use "$datadir/ipums_1.dta", clear
 order *, alpha
 
 codebook 
+
+sum

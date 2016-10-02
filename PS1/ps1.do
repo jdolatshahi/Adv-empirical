@@ -23,13 +23,6 @@ save hivdata_elig, replace
 /** BEGIN ANALYSIS HERE **/
 clear all
 prog drop _all
-capture log close
-set more off, permanently
-
-global datadir "/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empirical/Adv-empirical/PS1"
-global results "/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empirical/Adv-empirical/PS1"
-
-log using "$results/log_PS1.smcl", replace
 use "$datadir/hivdata_elig.dta", clear
 
 /** PART 1 **/
@@ -54,10 +47,12 @@ esttab using tables.rtf, append wide label mtitles("Mean diff") title(t-test of 
 
 /** PART 2 **/
 /* Q4&5: graphs */
+
 gen pct_got = got*100
 graph bar pct_got, over(any) ytitle("Percent") b1title("Received any incentive")
 
-graph bar pct_got, over(Ti) ytitle("Percent who got HIV results") b1title("Amount of financial incentive")
+gen Tidollar = Ti/100
+graph bar pct_got, over(Tidollar) ytitle("Percent who got HIV results") b1title("Amount of financial incentive in dollars")
 
 /** PART 3 **/
 /* Q6: OLS regression */

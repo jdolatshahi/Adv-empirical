@@ -100,8 +100,8 @@ clear all
 prog drop _all
 use "$datadir/randomhiv.dta", clear
 
-reg got any /* b = 0.4546 and is sig. nearly same as above. */
-
+eststo: reg got any /* b = 0.4546 and is sig. nearly same as above. */
+esttab using tables.rtf, append label title(OLS Regression of Random Subsample)
 /** PART 7 SAMPLE SIZE **/
 clear all
 prog drop _all

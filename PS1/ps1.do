@@ -34,23 +34,17 @@ use "$datadir/hivdata_elig.dta", clear
 
 /** PART 1 **/
 /* Q1 */
-sum age
-tab male
-tab hiv2004
+estpost tabstat age male hiv2004, s(mean sd) columns(statistics) 
+esttab using tables.rtf, replace main(mean) aux(sd) unstack label nostar onecell title(Summary statistics)
+
 
 /* Q2: summary stats control tx */
-sum age if under ==1 
-sum age if under ==0 
-sum age if any ==1 
-sum age if any ==0 
+estpost tabstat age educ2004 hiv2004, by(any) s(mean sd max min count) nototal column(statistics)
+esttab using tables.rtf, append main(mean) aux(sd) nostar unstack noobs label title(Any incentive)
 
-sum educ2004 if under == 1 
-sum educ2004 if under == 0 
-sum educ2004 if any == 1 
-sum educ2004 if any == 0 
+estpost tabstat age educ2004 hiv2004, by(under) s(mean sd max min count) nototal column(statistics)
+esttab using tables.rtf, append main(mean) aux(sd) nostar unstack noobs label title(Under 1.5 km)
 
-tab2 hiv2004 any, row col 
-tab2 hiv2004 under, row col 
 
 /* Q3: differences in age, hiv, mar */
 ttest educ2004, by(any)
@@ -122,4 +116,11 @@ use "$datadir/hivdata_elig.dta", clear
 
 sum any 
 oneway numcond any, tab
-power twomeans 0.83471074 1.0184332, power(0.8) a(0.05) nrat(1) sd1(2.4164268) sd2(2.1662179)
+
+/* put 0 & 1 because want delta = 1. very similar answers for sampsi or power */
+power twomeans 0 1, power(0.8) a(0.05) sd1(2.4164268) sd2(2.1662179)
+sampsi 0 1, power(0.8) alpha(0.05) sd1(2.4164268) sd2(2.1662179)
+
+power twomeans 0 1, power(0.9) a(0.05) sd1(2.4164268) sd2(2.1662179)
+sampsi 0 1, power(0.9) alpha(0.05) sd1(2.4164268) sd2(2.1662179)
+

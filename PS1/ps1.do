@@ -37,7 +37,6 @@ use "$datadir/hivdata_elig.dta", clear
 estpost tabstat age male hiv2004, s(mean sd) columns(statistics) 
 esttab using tables.rtf, replace main(mean) aux(sd) unstack label nostar onecell title(Summary statistics)
 
-
 /* Q2: summary stats control tx */
 estpost tabstat age educ2004 hiv2004, by(any) s(mean sd max min count) nototal column(statistics)
 esttab using tables.rtf, append main(mean) aux(sd) nostar unstack noobs label title(Any incentive)
@@ -45,19 +44,13 @@ esttab using tables.rtf, append main(mean) aux(sd) nostar unstack noobs label ti
 estpost tabstat age educ2004 hiv2004, by(under) s(mean sd max min count) nototal column(statistics)
 esttab using tables.rtf, append main(mean) aux(sd) nostar unstack noobs label title(Under 1.5 km)
 
-
 /* Q3: differences in age, hiv, mar */
-ttest educ2004, by(any)
-ttest educ2004, by(under)
 
-ttest age, by(any)
-ttest age, by(under)
+estpost ttest educ2004 age hiv2004 mar, by(any)
+esttab using tables.rtf, append wide label mtitles("Mean diff") title(t-test of differences by receiving any incentive) varwidth(30)
 
-tab2 hiv2004 any, chi
-tab2 hiv2004 under, chi
-
-tab2 mar any, col chi
-tab2 mar under, col chi
+estpost ttest educ2004 age hiv2004 mar, by(under)
+esttab using tables.rtf, append wide label mtitles("Mean diff") title(t-test of differences by distance under 1.5km) varwidth(30)
 
 /** PART 2 **/
 /* Q4&5: graphs */

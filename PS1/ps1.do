@@ -39,10 +39,10 @@ esttab using tables.rtf, replace main(mean) aux(sd) unstack label nostar onecell
 
 /* Q2: summary stats control tx */
 estpost tabstat age educ2004 hiv2004, by(any) s(mean sd max min count) nototal column(statistics)
-esttab using tables.rtf, append main(mean) aux(sd) nostar unstack noobs label title(Any incentive)
+esttab using tables.rtf, append main(mean) aux(sd) nostar unstack noobs label title(Summary statistics by receiving any incentive)
 
 estpost tabstat age educ2004 hiv2004, by(under) s(mean sd max min count) nototal column(statistics)
-esttab using tables.rtf, append main(mean) aux(sd) nostar unstack noobs label title(Under 1.5 km)
+esttab using tables.rtf, append main(mean) aux(sd) nostar unstack noobs label title(Summary statistics by distance under 1.5 km)
 
 /* Q3: differences in age, hiv, mar */
 

@@ -25,6 +25,8 @@ clear all
 prog drop _all
 use "$datadir/hivdata_elig.dta", clear
 
+label var male "Male" /* so label not gender */
+
 /** PART 1 **/
 /* Q1 */
 estpost tabstat age male hiv2004, s(mean sd) columns(statistics) 
@@ -52,34 +54,39 @@ gen pct_got = got*100
 graph bar pct_got, over(any) ytitle("Percent") b1title("Received any incentive")
 
 gen Tidollar = Ti/100
-graph bar pct_got, over(Tidollar) ytitle("Percent who got HIV results") b1title("Amount of financial incentive in dollars")
+graph bar pct_got, over(Tidollar) ytitle("Percent who got HIV results") b1title("Amount of financial incentive in Kwacha")
 
 /** PART 3 **/
-/* Q6: OLS regression */
-reg got any /* b = 0.4494 and it is signiticant at the p < 0.001 level. */
+/* Q6: OLS regression */ 
 
-reg got any age male educ2004 mar 
-/* The estimate of b does not change (b = 0.4495) and is still highly sig. OVERT or COVERT BIAS? */
+eststo: reg got any /* b = 0.4494 and it is signiticant at the p < 0.001 level. */
+eststo: reg got any age male educ2004 mar /* The estimate of b does not change (b = 0.4495) and is still highly sig. OVERT or COVERT BIAS? */
+esttab, varwidth(28) modelwidth(15) label scalar(r2) title(OLS Regression of Any Incentive Received)
+eststo clear
 
 /* Q7: group means comparison */
 ttest got, by(any) /* -0.4494 same as original OLS but negative. 
 Going from 1 to 0 decrease the probability of receiving a test by .45 */
 
 /* Q8: OLS by incentive amt */
-reg got Ti /* b = 0.0016 and is highly sig p < 0.001 */
-reg got Ti age male educ2004 mar /* b = 0.0016 and highly sig, no change with controls*/
-
+eststo: reg got Ti /* b = 0.0016 and is highly sig p < 0.001 */
+eststo: reg got Ti age male educ2004 mar /* b = 0.0016 and highly sig, no change with controls*/
+esttab, varwidth(30) modelwidth(15) label scalar(r2) title(OLS Regression of Amount of Incentive Received)
+eststo clear
 
 /** PART 4 **/
 /* Q10: heterogenous effects */
 gen anymale = any*male
-reg got any male anymale 
-/* d = 0.009 and is not sig. so no interaction effect. c = -0.15 and not sig. */
+label var anymale "Any x Male"
+eststo: reg got any male anymale 
 
-/* Q11 */
 gen anyedu = any*educ2004
-reg got any educ2004 anyedu
+label var anyedu "Any x Education"
+eststo: reg got any educ2004 anyedu
 /* d = 0.001 and is not sig. */
+
+esttab, varwidth(30) modelwidth(15) label scalar(r2) title(Heterogenous Effects Models)
+eststo clear
 
 /** PART 6 RANDOM SUBSAMPLE **/
 /* Q14: RANDOM SAMPLE INDICATOR */
@@ -95,7 +102,6 @@ prog drop _all
 use "$datadir/randomhiv.dta", clear
 
 reg got any /* b = 0.4546 and is sig. nearly same as above. */
-
 
 /** PART 7 SAMPLE SIZE **/
 clear all

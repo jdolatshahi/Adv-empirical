@@ -61,7 +61,7 @@ graph bar pct_got, over(Tidollar) ytitle("Percent who got HIV results") b1title(
 
 eststo: reg got any /* b = 0.4494 and it is signiticant at the p < 0.001 level. */
 eststo: reg got any age male educ2004 mar /* The estimate of b does not change (b = 0.4495) and is still highly sig. OVERT or COVERT BIAS? */
-esttab, varwidth(28) modelwidth(15) label scalar(r2) title(OLS Regression of Any Incentive Received)
+esttab using tables.rtf, append varwidth(28) modelwidth(15) label scalar(r2) title(OLS Regression of Any Incentive Received)
 eststo clear
 
 /* Q7: group means comparison */
@@ -71,21 +71,20 @@ Going from 1 to 0 decrease the probability of receiving a test by .45 */
 /* Q8: OLS by incentive amt */
 eststo: reg got Ti /* b = 0.0016 and is highly sig p < 0.001 */
 eststo: reg got Ti age male educ2004 mar /* b = 0.0016 and highly sig, no change with controls*/
-esttab, varwidth(30) modelwidth(15) label scalar(r2) title(OLS Regression of Amount of Incentive Received)
+esttab using tables.rtf, append varwidth(30) modelwidth(15) label scalar(r2) title(OLS Regression of Amount of Incentive Received)
 eststo clear
 
 /** PART 4 **/
-/* Q10: heterogenous effects */
+/* Q10 & 11: heterogenous effects */
 gen anymale = any*male
 label var anymale "Any x Male"
 eststo: reg got any male anymale 
 
 gen anyedu = any*educ2004
 label var anyedu "Any x Education"
-eststo: reg got any educ2004 anyedu
-/* d = 0.001 and is not sig. */
+eststo: reg got any educ2004 anyedu /* d = 0.001 and is not sig. */
 
-esttab, varwidth(30) modelwidth(15) label scalar(r2) title(Heterogenous Effects Models)
+esttab using tables.rtf, append varwidth(30) modelwidth(15) label scalar(r2) title(Heterogenous Effects Models)
 eststo clear
 
 /** PART 6 RANDOM SUBSAMPLE **/

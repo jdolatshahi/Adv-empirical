@@ -83,7 +83,6 @@ eststo: reg got any male anymale
 gen anyedu = any*educ2004
 label var anyedu "Any x Education"
 eststo: reg got any educ2004 anyedu /* d = 0.001 and is not sig. */
-
 esttab using tables.rtf, append varwidth(30) modelwidth(15) label scalar(r2) title(Heterogenous Effects Models)
 eststo clear
 
@@ -101,7 +100,9 @@ prog drop _all
 use "$datadir/randomhiv.dta", clear
 
 eststo: reg got any /* b = 0.4546 and is sig. nearly same as above. */
-esttab using tables.rtf, append label title(OLS Regression of Random Subsample)
+esttab using tables.rtf, append varwidth(28) modelwidth(15) label title(OLS Regression of Random Subsample) 
+eststo clear
+
 /** PART 7 SAMPLE SIZE **/
 clear all
 prog drop _all

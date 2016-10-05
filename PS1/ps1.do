@@ -26,9 +26,23 @@ prog drop _all
 use "$datadir/hivdata_elig.dta", clear
 
 label var male "Male" /* so label not gender */
+label define txct 1 "Treatment" 0 "Control"
+label values any txct
+label values under txct
+
+/* alternative for tables 1-3 * ALSO NEED DIFF IN MEANS AND SE OF MEAN DIFF */ 
+estpost tabstat age male hiv2004, s(mean sd) columns(statistics) 
+eststo fullsample, title("Full sample")
+estpost tabstat age educ2004 hiv2004, by(any) s(mean sd max min count) nototal column(statistics)
+eststo any, title("Any")
+estpost tabstat age educ2004 hiv2004, by(under) s(mean sd max min count) nototal column(statistics)
+eststo under, title("Under")
+estpost ttest educ2004 age hiv2004 mar, by(any)
+esttab *, replace main(mean) aux(sd) label title(table) mtitles nonumbers nostar
 
 /** PART 1 **/
 /* Q1 */
+
 estpost tabstat age male hiv2004, s(mean sd) columns(statistics) 
 esttab using tables.rtf, replace main(mean) aux(sd) unstack label nostar onecell title(Summary statistics)
 
@@ -45,7 +59,7 @@ estpost ttest educ2004 age hiv2004 mar, by(any)
 esttab using tables.rtf, append wide label mtitles("Mean diff") title(t-test of differences by receiving any incentive) varwidth(30)
 
 estpost ttest educ2004 age hiv2004 mar, by(under)
-esttab using tables.rtf, append wide label mtitles("Mean diff") title(t-test of differences by distance under 1.5km) varwidth(30)
+esttab using tables.rtf, append e(b) wide label mtitles("Mean diff") title(t-test of differences by distance under 1.5km) varwidth(30)
 
 /** PART 2 **/
 /* Q4&5: graphs */
@@ -68,9 +82,9 @@ eststo clear
 ttest got, by(any) /* -0.4494 same as original OLS but negative. 
 Going from 1 to 0 decrease the probability of receiving a test by .45 */
 
-/* Q8: OLS by incentive amt */
-eststo: reg got Ti /* b = 0.0016 and is highly sig p < 0.001 */
-eststo: reg got Ti age male educ2004 mar /* b = 0.0016 and highly sig, no change with controls*/
+/* Q8: OLS by incentive amt -- ALWAYS USE ROBUST SE*/
+eststo: reg got Ti, r /* b = 0.0016 and is highly sig p < 0.001 */
+eststo: reg got Ti age male educ2004 mar, r /* b = 0.0016 and highly sig, no change with controls*/
 esttab using tables.rtf, append varwidth(30) modelwidth(15) label scalar(r2) title(OLS Regression of Amount of Incentive Received)
 eststo clear
 
@@ -78,11 +92,11 @@ eststo clear
 /* Q10 & 11: heterogenous effects */
 gen anymale = any*male
 label var anymale "Any x Male"
-eststo: reg got any male anymale 
+eststo: reg got any male anymale, r 
 
 gen anyedu = any*educ2004
 label var anyedu "Any x Education"
-eststo: reg got any educ2004 anyedu /* d = 0.001 and is not sig. */
+eststo: reg got any educ2004 anyedu, r /* d = 0.001 and is not sig. */
 esttab using tables.rtf, append varwidth(30) modelwidth(15) label scalar(r2) title(Heterogenous Effects Models)
 eststo clear
 
@@ -127,3 +141,9 @@ sampclus, obsclus(40) rho(0.07897)
 quietly sampsi 0 1, power(0.9) alpha(0.05) sd1(2.4164268) sd2(2.1662179)
 sampclus, obsclus(40) rho(0.07897)
 
+/** PART VIII BONUS **/
+/* Q18: */
+ttest got, by(any)
+
+/** loop create new tx to randomize in same proportion of orig randomization. store statistics into new var. 
+or store just a conditional whether it is above or below a cut off value and have tab running at each loop **/ 

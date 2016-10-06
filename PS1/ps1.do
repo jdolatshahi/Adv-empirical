@@ -58,7 +58,7 @@ estpost ttest educ2004 age hiv2004 mar, by(any)
 esttab using tables.rtf, append wide label mtitles("Mean diff") title(t-test of differences by receiving any incentive) varwidth(30)
 
 estpost ttest educ2004 age hiv2004 mar, by(under)
-esttab using tables.rtf, append e(b) wide label mtitles("Mean diff") title(t-test of differences by distance under 1.5km) varwidth(30)
+esttab using tables.rtf, append wide label mtitles("Mean diff") title(t-test of differences by distance under 1.5km) varwidth(30)
 
 /** PART 2 **/
 /* Q4&5: graphs */

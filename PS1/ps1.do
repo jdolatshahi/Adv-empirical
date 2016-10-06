@@ -20,25 +20,24 @@ tab elig
 keep if elig ==1 
 save hivdata_elig, replace
 
-/** BEGIN ANALYSIS HERE **/
 clear all
 prog drop _all
 use "$datadir/hivdata_elig.dta", clear
 
 label var male "Male" /* so label not gender */
+
 label define txct 1 "Treatment" 0 "Control"
 label values any txct
 label values under txct
 
 /* alternative for tables 1-3 * ALSO NEED DIFF IN MEANS AND SE OF MEAN DIFF */ 
-estpost tabstat age male hiv2004, s(mean sd) columns(statistics) 
+estpost tabstat age male educ2004 hiv2004, s(mean sd) columns(statistics) 
 eststo fullsample, title("Full sample")
-estpost tabstat age educ2004 hiv2004, by(any) s(mean sd max min count) nototal column(statistics)
+estpost tabstat age male educ2004 hiv2004, by(any) s(mean sd max min count) nototal column(statistics)
 eststo any, title("Any")
-estpost tabstat age educ2004 hiv2004, by(under) s(mean sd max min count) nototal column(statistics)
+estpost tabstat age male educ2004 hiv2004, by(under) s(mean sd max min count) nototal column(statistics)
 eststo under, title("Under")
-estpost ttest educ2004 age hiv2004 mar, by(any)
-esttab *, replace main(mean) aux(sd) label title(table) mtitles nonumbers nostar
+esttab *, replace wide main(mean) aux(sd) label title(table) mtitles nonumbers nostar
 
 /** PART 1 **/
 /* Q1 */
@@ -68,7 +67,7 @@ gen pct_got = got*100
 graph bar pct_got, over(any) ytitle("Percent") b1title("Received any incentive")
 
 gen Tidollar = Ti/100
-graph bar pct_got, over(Tidollar) ytitle("Percent who got HIV results") b1title("Amount of financial incentive in Kwacha")
+graph bar pct_got, over(Tidollar) ytitle("Percent who got HIV results") b1title("Amount of financial incentive in Kwacha") 
 
 /** PART 3 **/
 /* Q6: OLS regression */ 
@@ -121,7 +120,6 @@ eststo clear
 clear all
 prog drop _all
 use "$datadir/hivdata_elig.dta", clear
-
 sum any 
 oneway numcond any, tab
 

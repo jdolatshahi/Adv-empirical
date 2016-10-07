@@ -55,10 +55,10 @@ esttab using tables.rtf, append main(mean) aux(sd) nostar unstack noobs label ti
 /* Q3: differences in age, hiv, mar */
 
 estpost ttest educ2004 age hiv2004 mar, by(any)
-esttab using tables.rtf, append wide label mtitles("Mean diff") title(t-test of differences by receiving any incentive) varwidth(30)
+esttab using tables.rtf, append se wide label mtitles("Mean diff") title(t-test of differences by receiving any incentive) varwidth(30)
 
 estpost ttest educ2004 age hiv2004 mar, by(under)
-esttab using tables.rtf, append wide label mtitles("Mean diff") title(t-test of differences by distance under 1.5km) varwidth(30)
+esttab using tables.rtf, append se wide label mtitles("Mean diff") title(t-test of differences by distance under 1.5km) varwidth(30)
 
 /** PART 2 **/
 /* Q4&5: graphs */
@@ -67,14 +67,14 @@ gen pct_got = got*100
 graph bar pct_got, over(any) ytitle("Percent") b1title("Received any incentive")
 
 gen Tidollar = Ti/100
-graph bar pct_got, over(Tidollar) ytitle("Percent who got HIV results") b1title("Amount of financial incentive in Kwacha") 
+graph bar pct_got, over(Tidollar) ytitle("Percent who got HIV results") b1title("Amount of financial incentive in Kwacha") blabel(bar, format(%12.2f))
 
 /** PART 3 **/
-/* Q6: OLS regression */ 
+/* Q6: OLS regression -- CHECK SEs*/ 
 
 eststo: reg got any /* b = 0.4494 and it is signiticant at the p < 0.001 level. */
 eststo: reg got any age male educ2004 mar /* The estimate of b does not change (b = 0.4495) and is still highly sig. OVERT or COVERT BIAS? */
-esttab using tables.rtf, append varwidth(28) modelwidth(15) label scalar(r2) title(OLS Regression of Any Incentive Received)
+esttab using tables.rtf, append se varwidth(28) modelwidth(15) label scalar(r2) title(OLS Regression of Any Incentive Received)
 eststo clear
 
 /* Q7: group means comparison */
@@ -84,7 +84,7 @@ Going from 1 to 0 decrease the probability of receiving a test by .45 */
 /* Q8: OLS by incentive amt -- ALWAYS USE ROBUST SE*/
 eststo: reg got Ti, r /* b = 0.0016 and is highly sig p < 0.001 */
 eststo: reg got Ti age male educ2004 mar, r /* b = 0.0016 and highly sig, no change with controls*/
-esttab using tables.rtf, append varwidth(30) modelwidth(15) label scalar(r2) title(OLS Regression of Amount of Incentive Received)
+esttab using tables.rtf, append se varwidth(30) modelwidth(15) label scalar(r2) title(OLS Regression of Amount of Incentive Received)
 eststo clear
 
 /** PART 4 **/
@@ -96,7 +96,7 @@ eststo: reg got any male anymale, r
 gen anyedu = any*educ2004
 label var anyedu "Any x Education"
 eststo: reg got any educ2004 anyedu, r /* d = 0.001 and is not sig. */
-esttab using tables.rtf, append varwidth(30) modelwidth(15) label scalar(r2) title(Heterogenous Effects Models)
+esttab using tables.rtf, append se varwidth(30) modelwidth(15) label scalar(r2) title(Heterogenous Effects Models)
 eststo clear
 
 /** PART 6 RANDOM SUBSAMPLE **/
@@ -113,7 +113,7 @@ prog drop _all
 use "$datadir/randomhiv.dta", clear
 
 eststo: reg got any /* b = 0.4546 and is sig. nearly same as above. */
-esttab using tables.rtf, append varwidth(28) modelwidth(15) label title(OLS Regression of Random Subsample) 
+esttab using tables.rtf, append se varwidth(28) modelwidth(15) label title(OLS Regression of Random Subsample) 
 eststo clear
 
 /** PART 7 SAMPLE SIZE **/

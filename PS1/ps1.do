@@ -39,6 +39,13 @@ estpost tabstat age male educ2004 hiv2004, by(under) s(mean sd max min count) no
 eststo under, title("Under")
 esttab *, replace wide main(mean) aux(sd) label title(table) mtitles nonumbers nostar
 
+/* ttests */
+estpost ttest educ2004 age hiv2004 mar, by(any)
+eststo any, title("Any")
+estpost ttest educ2004 age hiv2004 mar, by(under)
+eststo under, title("Under")
+esttab * using tables.rtf, append se label mtitles title(t-test of differences)
+
 /** PART 1 **/
 /* Q1 */
 
@@ -55,10 +62,11 @@ esttab using tables.rtf, append main(mean) aux(sd) nostar unstack noobs label ti
 /* Q3: differences in age, hiv, mar */
 
 estpost ttest educ2004 age hiv2004 mar, by(any)
-esttab using tables.rtf, append se wide label mtitles("Mean diff") title(t-test of differences by receiving any incentive) varwidth(30)
+esttab using tables2.rtf, replace se 
+esttab * using tables2.rtf, replace main(b) aux(se) wide label mtitles("Mean diff") title(t-test of differences by receiving any incentive) varwidth(30)
 
 estpost ttest educ2004 age hiv2004 mar, by(under)
-esttab using tables.rtf, append se wide label mtitles("Mean diff") title(t-test of differences by distance under 1.5km) varwidth(30)
+esttab using tables2.rtf, append se wide label mtitles("Mean diff") title(t-test of differences by distance under 1.5km) varwidth(30)
 
 /** PART 2 **/
 /* Q4&5: graphs */

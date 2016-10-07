@@ -64,7 +64,7 @@ esttab using tables.rtf, append se wide label mtitles("Mean diff") title(t-test 
 /* Q4&5: graphs */
 
 gen pct_got = got*100
-graph bar pct_got, over(any) ytitle("Percent") b1title("Received any incentive")
+graph bar pct_got, over(any) ytitle("Percent") b1title("Received any incentive") blabel(bar, format(%12.2f))
 
 gen Tidollar = Ti/100
 graph bar pct_got, over(Tidollar) ytitle("Percent who got HIV results") b1title("Amount of financial incentive in Kwacha") blabel(bar, format(%12.2f))

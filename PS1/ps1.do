@@ -37,7 +37,7 @@ estpost tabstat age male educ2004 hiv2004, by(any) s(mean sd max min count) noto
 eststo any, title("Any")
 estpost tabstat age male educ2004 hiv2004, by(under) s(mean sd max min count) nototal column(statistics)
 eststo under, title("Under")
-esttab *, replace wide main(mean) aux(sd) label title(table) mtitles nonumbers nostar
+esttab * using tables.rtf, replace wide main(mean) aux(sd) label title(Summary statistics) mtitles nonumbers nostar
 
 /* ttests */
 estpost ttest educ2004 age hiv2004 mar, by(any)

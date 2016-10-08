@@ -37,14 +37,18 @@ estpost tabstat age male educ2004 hiv2004, by(any) s(mean sd max min count) noto
 eststo any, title("Any")
 estpost tabstat age male educ2004 hiv2004, by(under) s(mean sd max min count) nototal column(statistics)
 eststo under, title("Under")
-esttab * using tables.rtf, replace wide main(mean) aux(sd) label title(Summary statistics) mtitles nonumbers nostar
+esttab * using tables2.rtf, replace wide main(mean) aux(sd) label title(Summary statistics) mtitles nonumbers nostar
+eststo clear
 
 /* ttests */
 estpost ttest educ2004 age hiv2004 mar, by(any)
-eststo any, title("Any")
+eststo any, title("Mean differences Any")
 estpost ttest educ2004 age hiv2004 mar, by(under)
-eststo under, title("Under")
-esttab * using tables.rtf, append se label mtitles title(t-test of differences)
+eststo under, title("Mean differences Under")
+estpost ttest got, by(any)
+eststo any, title("Mean diff Got by Any")
+esttab * using tables2.rtf, append se label mtitles title(t-tests of differences)
+eststo clear
 
 /** PART 1 **/
 /* Q1 */
@@ -61,10 +65,10 @@ esttab using tables.rtf, append main(mean) aux(sd) nostar unstack noobs label ti
 /* Q3: differences in age, hiv, mar */
 estpost ttest educ2004 age hiv2004 mar, by(any)
 esttab using tables2.rtf, replace se 
-esttab * using tables2.rtf, replace main(b) aux(se) wide label mtitles("Mean diff") title(t-test of differences by receiving any incentive) varwidth(30)
+esttab * using tables.rtf, replace main(b) aux(se) wide label mtitles("Mean diff") title(t-test of differences by receiving any incentive) varwidth(30)
 
 estpost ttest educ2004 age hiv2004 mar, by(under)
-esttab using tables2.rtf, append se wide label mtitles("Mean diff") title(t-test of differences by distance under 1.5km) varwidth(30)
+esttab using tables.rtf, append se wide label mtitles("Mean diff") title(t-test of differences by distance under 1.5km) varwidth(30)
 
 /** PART 2 **/
 /* Q4&5: graphs */
@@ -80,7 +84,7 @@ graph bar pct_got, over(Tidollar) ytitle("Percent who got HIV results") b1title(
 
 eststo: reg got any /* b = 0.4494 and it is signiticant at the p < 0.001 level. */
 eststo: reg got any age male educ2004 mar /* The estimate of b does not change (b = 0.4495) and is still highly sig. OVERT or COVERT BIAS? */
-esttab using tables.rtf, append se varwidth(28) modelwidth(15) label scalar(r2) title(OLS Regression of Any Incentive Received)
+esttab using tables2.rtf, append se varwidth(28) modelwidth(15) label scalar(r2) title(OLS Regression of Any Incentive Received)
 eststo clear
 
 /* Q7: group means comparison */
@@ -90,19 +94,19 @@ Going from 1 to 0 decrease the probability of receiving a test by .45 */
 /* Q8: OLS by incentive amt -- ALWAYS USE ROBUST SE*/
 eststo: reg got Ti, r /* b = 0.0016 and is highly sig p < 0.001 */
 eststo: reg got Ti age male educ2004 mar, r /* b = 0.0016 and highly sig, no change with controls*/
-esttab using tables.rtf, append se varwidth(30) modelwidth(15) label scalar(r2) title(OLS Regression of Amount of Incentive Received)
+esttab using tables2.rtf, append se varwidth(30) modelwidth(15) label scalar(r2) title(OLS Regression of Amount of Incentive Received)
 eststo clear
 
 /** PART 4 **/
 /* Q10 & 11: heterogenous effects */
 gen anymale = any*male
 label var anymale "Any x Male"
-eststo: reg got any male anymale, r 
+eststo: reg got any male anymale, robust
 
 gen anyedu = any*educ2004
 label var anyedu "Any x Education"
-eststo: reg got any educ2004 anyedu, r /* d = 0.001 and is not sig. */
-esttab using tables.rtf, append se varwidth(30) modelwidth(15) label scalar(r2) title(Heterogenous Effects Models)
+eststo: reg got any educ2004 anyedu, robust /* d = 0.001 and is not sig. */
+esttab using tables2.rtf, append se varwidth(30) modelwidth(15) label scalar(r2) title(Heterogenous Effects Models)
 eststo clear
 
 /** PART 6 RANDOM SUBSAMPLE **/
@@ -118,8 +122,8 @@ clear all
 prog drop _all
 use "$datadir/randomhiv.dta", clear
 
-eststo: reg got any /* b = 0.4546 and is sig. nearly same as above. */
-esttab using tables.rtf, append se varwidth(28) modelwidth(15) label title(OLS Regression of Random Subsample) 
+eststo: reg got any, robust /* b = 0.4546 and is sig. nearly same as above. */
+esttab using tables2.rtf, append se varwidth(28) modelwidth(15) label title(OLS Regression of Random Subsample) 
 eststo clear
 
 /** PART 7 SAMPLE SIZE **/

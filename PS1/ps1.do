@@ -45,9 +45,13 @@ estpost ttest educ2004 age hiv2004 mar, by(any)
 eststo any, title("Mean differences Any")
 estpost ttest educ2004 age hiv2004 mar, by(under)
 eststo under, title("Mean differences Under")
-estpost ttest got, by(any)
-eststo any, title("Mean diff Got by Any")
 esttab * using tables2.rtf, append b(2) se(2) label mtitles title(t-tests of differences)
+eststo clear
+
+/* ttest got by any */
+estpost ttest got, by(any)
+eststo any2, title("Mean diff Got by Any")
+esttab using tables2.rtf, append b(2) se(2) label mtitles title(t-test of differences Got by Any)
 eststo clear
 
 /** PART 2 **/

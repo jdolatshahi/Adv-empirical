@@ -37,7 +37,7 @@ estpost tabstat age male educ2004 hiv2004, by(any) s(mean sd max min count) noto
 eststo any, title("Any")
 estpost tabstat age male educ2004 hiv2004, by(under) s(mean sd max min count) nototal column(statistics)
 eststo under, title("Under")
-esttab * using tables2.rtf, replace wide main(mean) aux(sd) label title(Summary statistics) mtitles nonumbers nostar
+esttab * using tables2.rtf, replace wide main(mean 2) aux(sd 2) label title(Summary statistics) mtitles nonumbers nostar
 eststo clear
 
 /* ttests */
@@ -47,13 +47,13 @@ estpost ttest educ2004 age hiv2004 mar, by(under)
 eststo under, title("Mean differences Under")
 estpost ttest got, by(any)
 eststo any, title("Mean diff Got by Any")
-esttab * using tables2.rtf, append se label mtitles title(t-tests of differences)
+esttab * using tables2.rtf, append b(2) se(2) label mtitles title(t-tests of differences)
 eststo clear
 
 /** PART 1 **/
 /* Q1 */
 estpost tabstat age male hiv2004, s(mean sd) columns(statistics) 
-esttab using tables.rtf, replace main(mean) aux(sd) unstack label nostar onecell title(Summary statistics)
+esttab using tables.rtf, replace main(mean 2) aux(sd 2) unstack label nostar onecell title(Summary statistics)
 
 /* Q2: summary stats control tx */
 estpost tabstat age educ2004 hiv2004, by(any) s(mean sd max min count) nototal column(statistics)

@@ -125,12 +125,10 @@ sampclus, obsclus(40) rho(0.07897)
 quietly sampsi 0 1, power(0.9) alpha(0.05) sd1(2.4164268) sd2(2.1662179)
 sampclus, obsclus(40) rho(0.07897)
 
-/** PART VIII BONUS **/
-/* Q18: */
-ttest got, by(any)
 
 /** loop create new tx to randomize in same proportion of orig randomization. store statistics into new var. 
 or store just a conditional whether it is above or below a cut off value and have tab running at each loop **/ 
+
 
 
 /** DON'T USE OLD CODE **/
@@ -156,3 +154,7 @@ esttab using tables.rtf, append se wide label mtitles("Mean diff") title(t-test 
 /* Q7: group means comparison */
 ttest got, by(any) /* -0.4494 same as original OLS but negative. 
 Going from 1 to 0 decrease the probability of receiving a test by .45 */
+
+/** PART VIII BONUS **/
+/* Q18: */
+ttest got, by(any)

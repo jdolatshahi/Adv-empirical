@@ -98,8 +98,8 @@ clear all
 prog drop _all
 use "$datadir/randomhiv.dta", clear
 
-eststo: reg got any, robust /* b = 0.4546 and is sig. nearly same as above. */
-esttab using tables2.rtf, append se varwidth(28) modelwidth(15) label title(OLS Regression of Random Subsample) 
+eststo: reg got any, r /* b = 0.4546 and is sig. nearly same as above. */
+esttab using tables2.rtf, append b(2) se(2) varwidth(28) modelwidth(15) label title(OLS Regression of Random Subsample) 
 eststo clear
 
 /** PART 7 SAMPLE SIZE **/
@@ -131,6 +131,7 @@ ttest got, by(any)
 
 /** loop create new tx to randomize in same proportion of orig randomization. store statistics into new var. 
 or store just a conditional whether it is above or below a cut off value and have tab running at each loop **/ 
+
 
 /** DON'T USE OLD CODE **/
 /** PART 1 **/

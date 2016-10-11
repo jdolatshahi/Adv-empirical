@@ -129,7 +129,17 @@ sampclus, obsclus(40) rho(0.07897)
 /** loop create new tx to randomize in same proportion of orig randomization. store statistics into new var. 
 or store just a conditional whether it is above or below a cut off value and have tab running at each loop **/ 
 
+clear all
+prog drop _all
+use "$datadir/hivdata_elig.dta", clear
 
+foreach
+set seed 12345
+gen rannum = uniform()
+sort rannum
+gen grp = .
+
+sum(rannum)
 
 /** DON'T USE OLD CODE **/
 /** PART 1 **/

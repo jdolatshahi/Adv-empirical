@@ -64,7 +64,7 @@ esttab using tables.rtf, append main(mean) aux(sd) nostar unstack noobs label ti
 
 /* Q3: differences in age, hiv, mar */
 estpost ttest educ2004 age hiv2004 mar, by(any)
-esttab using tables2.rtf, replace se 
+esttab using tables2.rtf, append se 
 esttab * using tables.rtf, replace main(b) aux(se) wide label mtitles("Mean diff") title(t-test of differences by receiving any incentive) varwidth(30)
 
 estpost ttest educ2004 age hiv2004 mar, by(under)
@@ -82,9 +82,9 @@ graph bar pct_got, over(Tidollar) ytitle("Percent who got HIV results") b1title(
 /** PART 3 **/
 /* Q6: OLS regression -- CHECK SEs*/ 
 
-eststo: reg got any /* b = 0.4494 and it is signiticant at the p < 0.001 level. */
-eststo: reg got any age male educ2004 mar /* The estimate of b does not change (b = 0.4495) and is still highly sig. OVERT or COVERT BIAS? */
-esttab using tables2.rtf, append se varwidth(28) modelwidth(15) label scalar(r2) title(OLS Regression of Any Incentive Received)
+eststo: reg got any, r /* b = 0.4494 and it is signiticant at the p < 0.001 level. */
+eststo: reg got any age male educ2004 mar, r /* The estimate of b does not change (b = 0.4495) and is still highly sig. OVERT or COVERT BIAS? */
+esttab using tables2.rtf, append se(%7.2f) varwidth(28) modelwidth(15) label scalar(r2) title(OLS Regression of Any Incentive Received)
 eststo clear
 
 /* Q7: group means comparison */

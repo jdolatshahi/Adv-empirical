@@ -58,13 +58,13 @@ eststo clear
 /* Q4&5: graphs */
 
 gen pct_got = got*100
-graph bar pct_got, over(any) ytitle("Percent") b1title("Received any incentive") blabel(bar, format(%12.2f))
+graph bar pct_got, over(any) ytitle("Percent learning HIV status") b1title("Received any incentive") blabel(bar, format(%12.2f))
 
 gen Tidollar = Ti/100
-graph bar pct_got, over(Tidollar) ytitle("Percent who got HIV results") b1title("Amount of financial incentive in Kwacha") blabel(bar, format(%12.2f))
+graph bar pct_got, over(Tidollar) ytitle("Percent learning HIV status") b1title("Amount of financial incentive in Kwacha") blabel(bar, format(%12.2f))
 
 /** PART 3 **/
-/* Q6: OLS regression -- CHECK SEs*/ 
+/* Q6: OLS regression - all robust SEs*/ 
 
 eststo: reg got any, r /* b = 0.4494 and it is signiticant at the p < 0.001 level. */
 eststo: reg got any age male educ2004 mar, r /* The estimate of b does not change (b = 0.4495) and is still highly sig. OVERT or COVERT BIAS? */

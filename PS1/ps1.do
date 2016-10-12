@@ -115,10 +115,8 @@ oneway numcond any, tab
 
 /* Q16:
 put 0 & 1 because want delta = 1. very similar answers for sampsi or power */
-power twomeans 0 1, power(0.8) a(0.05) sd1(2.4164268) sd2(2.1662179)
 sampsi 0 1, power(0.8) alpha(0.05) sd1(2.4164268) sd2(2.1662179)
 
-power twomeans 0 1, power(0.9) a(0.05) sd1(2.4164268) sd2(2.1662179)
 sampsi 0 1, power(0.9) alpha(0.05) sd1(2.4164268) sd2(2.1662179)
 
 /* Q17: cluster */

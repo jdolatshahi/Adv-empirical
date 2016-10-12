@@ -115,16 +115,16 @@ oneway numcond any, tab
 
 /* Q16:
 put 0 & 1 because want delta = 1. very similar answers for sampsi or power */
-sampsi 0 1, power(0.8) alpha(0.05) sd1(2.4164268) sd2(2.1662179)
+sampsi 0 1, power(0.8) alpha(0.05) sd1(1.9174987) sd2(1.8848715)
 
-sampsi 0 1, power(0.9) alpha(0.05) sd1(2.4164268) sd2(2.1662179)
+sampsi 0 1, power(0.9) alpha(0.05) sd1(1.9174987) sd2(1.8848715)
 
 /* Q17: cluster */
 loneway numcond site
-quietly sampsi 0 1, power(0.8) alpha(0.05) sd1(2.4164268) sd2(2.1662179)
+quietly sampsi 0 1, power(0.8) alpha(0.05) sd1(1.9174987) sd2(1.8848715)
 sampclus, obsclus(40) rho(0.07897)
 
-quietly sampsi 0 1, power(0.9) alpha(0.05) sd1(2.4164268) sd2(2.1662179)
+quietly sampsi 0 1, power(0.9) alpha(0.05) sd1(1.9174987) sd2(1.8848715)
 sampclus, obsclus(40) rho(0.07897)
 
 
@@ -147,6 +147,7 @@ gen grp = .
 sum(rannum)
 
 gen grtdiff = .
+if grtdiff > 
 
 /** DON'T USE OLD CODE **/
 /** PART 1 **/
@@ -171,4 +172,5 @@ esttab using tables.rtf, append se wide label mtitles("Mean diff") title(t-test 
 /* Q7: group means comparison */
 ttest got, by(any) /* -0.4494 same as original OLS but negative. 
 Going from 1 to 0 decrease the probability of receiving a test by .45 */
+
 

@@ -63,7 +63,7 @@ gen pct_got = got*100
 graph bar pct_got, over(any) ytitle("Percent learning HIV status") b1title("Received any incentive") blabel(bar, format(%12.2f))
 
 gen Tidollar = Ti/100
-graph bar pct_got, over(Tidollar) ytitle("Percent learning HIV status") b1title("Amount of financial incentive in Kwacha") blabel(bar, format(%12.2f))
+graph bar pct_got, over(Tidollar) ytitle("Percent learning HIV status") b1title("Amount of financial incentive in dollars") blabel(bar, format(%12.2f))
 
 /* Q6: OLS regression*/ 
 
@@ -73,8 +73,8 @@ esttab using tables2.rtf, append b(2) se(%7.2f) varwidth(28) modelwidth(15) labe
 eststo clear
 
 /* Q8: OLS by incentive amt*/
-eststo: reg got Ti, r
-eststo: reg got Ti age male educ2004 mar, r
+eststo: reg got tinc, r
+eststo: reg got tinc age male educ2004 mar, r
 esttab using tables2.rtf, append b(3) se(3) varwidth(30) modelwidth(15) label scalar(r2) title(OLS Regression of Amount of Incentive Received)
 eststo clear
 

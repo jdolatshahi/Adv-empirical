@@ -130,6 +130,9 @@ sampclus, obsclus(40) rho(0.07897)
 
 /** loop create new tx to randomize in same proportion of orig randomization. store statistics into new var. 
 or store just a conditional whether it is above or below a cut off value and have tab running at each loop **/ 
+/** PART VIII BONUS **/
+/* Q18: */
+ttest got, by(any) /* diff =  -.4493691 */
 
 clear all
 prog drop _all
@@ -142,6 +145,8 @@ sort rannum
 gen grp = .
 
 sum(rannum)
+
+gen grtdiff = .
 
 /** DON'T USE OLD CODE **/
 /** PART 1 **/
@@ -167,6 +172,3 @@ esttab using tables.rtf, append se wide label mtitles("Mean diff") title(t-test 
 ttest got, by(any) /* -0.4494 same as original OLS but negative. 
 Going from 1 to 0 decrease the probability of receiving a test by .45 */
 
-/** PART VIII BONUS **/
-/* Q18: */
-ttest got, by(any)

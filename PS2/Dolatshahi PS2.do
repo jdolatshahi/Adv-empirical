@@ -43,5 +43,7 @@ eststo Round57: reg labor_reg lnYearly_gva if post == 0, r
 eststo Round63: reg labor_reg lnYearly_gva if post == 1, r
 eststo Fullsample: reg labor_reg lnYearly_gva post, r
 eststo Interaction: reg labor_reg lnYearly_gva post labor_post, r
+eststo Fullsample_FE: xi: reg labor_reg lnYearly_gva post i.state i.NIC_io, r
+eststo Interaction_FE: xi: reg labor_reg lnYearly_gva post i.state i.NIC_io, r
 esttab * , append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Reduced Form Regressions)
 eststo clear

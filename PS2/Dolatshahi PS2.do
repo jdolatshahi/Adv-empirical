@@ -24,11 +24,15 @@ estpost tabstat lnYearly_gva manshare manufacturing_total allmanufacturing labor
 eststo r57, title("Round 57")
 estpost tabstat lnYearly_gva manshare manufacturing_total allmanufacturing labor_reg_besley_flex2 if post==1, s(mean sd) columns(statistics)
 eststo r63, title("Round 63")
-esttab * using tables.rtf, replace main(mean 2) aux(sd 2) label title(Summary statistics) mtitles nonumbers nostar varwidth(25)
+estpost ttest lnYearly_gva Total_worker, by(post)
+eststo ttests, title("Mean differences")
+esttab * using tables.rtf, replace cells(mean(pattern(1 1 1 0) fmt(2)) sd(pattern(1 1 1 0) par) b(pattern(0 0 1) nostar fmt(2))) label title(Summary statistics) mtitles nonumbers nostar varwidth(25)
 eststo clear
 
+/* check growth rate */
 tabstat lnYearly_gva, by(post)
 di (12.81555 - 12.40027)/5
 
 tabstat Total_worker, by(post)
 di (60.41097 - 12.74296)/5 
+

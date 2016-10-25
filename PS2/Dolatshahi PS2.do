@@ -17,9 +17,6 @@ use "$datadir/generateddata_20120221_sub.dta", clear
 
 order *, alpha 
 
-gen r57 = 1 if post == 0
-replace r57 = 0 if post ==1 
-
 /* Summary stats */
 estpost tabstat lnYearly_gva manshare manufacturing_total allmanufacturing labor_reg_besley_flex2, s(mean sd) columns(statistics)
 eststo fullsample, title("Full Sample")

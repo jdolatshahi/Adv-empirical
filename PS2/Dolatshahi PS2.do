@@ -36,3 +36,12 @@ di (12.81555 - 12.40027)/5
 tabstat Total_worker, by(post)
 di (60.41097 - 12.74296)/5 
 
+/* reduced form regs */
+gen labor_post = labor_reg*post
+label var labor_post "labor_reg X Round 63"
+eststo Round57: reg labor_reg lnYearly_gva if post == 0, r
+eststo Round63: reg labor_reg lnYearly_gva if post == 1, r
+eststo Fullsample: reg labor_reg lnYearly_gva post, r
+eststo Interaction: reg labor_reg lnYearly_gva post labor_post, r
+esttab * , append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Reduced Form Regressions)
+eststo clear

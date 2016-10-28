@@ -47,3 +47,13 @@ eststo Fullsample_FE: xi: reg lnYearly_gva labor_reg post i.state i.NIC_io, r
 eststo Interaction_FE: xi: reg lnYearly_gva labor_reg post labor_post i.state i.NIC_io, r
 esttab * using tables.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Reduced Form Regressions)
 eststo clear
+
+/* main regs */
+eststo mainreg: reg lnYearly_gva allmanu manu_post post, r
+eststo model2: reg lnYearly_gva allmanu manu_post post labor_reg, r
+eststo model3: reg lnYearly_gva allmanu manu_post post labor_reg labor_post, r
+eststo modelFE: xi: reg lnYearly_gva allmanu manu_post post labor_reg labor_post i.state i.NIC_io, r
+esttab * using tables.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Main Regression)
+eststo clear
+
+

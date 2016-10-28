@@ -60,7 +60,7 @@ esttab using tables2.rtf, append b(2) se(2) label mtitles title(t-test of differ
 eststo clear
 
 /* Q4&5: graphs */
-
+var
 gen pct_got = got*100
 graph bar pct_got, over(any) ytitle("Percent learning HIV status") b1title("Received any incentive") blabel(bar, format(%12.2f))
 

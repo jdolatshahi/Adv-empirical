@@ -56,9 +56,12 @@ eststo modelFE: xi: reg lnYearly_gva allmanu manu_post post labor_reg labor_post
 esttab * using tables.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Main Regression)
 eststo clear
 
-/* IV regs */ 
+/* IV regs ivreg y (x = z), first */ 
 ssc install ivreg2
 ssc install ranktest
-ivreg y (x = z), first
-eststo model1: ivreg2 lnYearly_gva (allmanu = labor_reg), r first
-eststo modelFE: xi: ivreg2 lnYearly_gva (allmanu = labor_reg) i.state i.NIC_io, r first
+
+eststo: ivreg lnYearly_gva (allmanu = labor_reg), r first
+eststo: xi: ivreg lnYearly_gva i.state (allmanu = labor_reg), r first
+eststo: xi: ivreg lnYearly_gva i.state i.NIC_io labor_reg allmanu post (manu_post = labor_post), r first
+esttab * using tables.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(IV Regression)
+eststo clear

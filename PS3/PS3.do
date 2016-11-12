@@ -1,6 +1,6 @@
 /** 
 Jennifer Dolatshahi
-Adv Empirical PS 2 
+Adv Empirical PS 3 
 November 16, 2016 **/
 
 clear all

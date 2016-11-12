@@ -1,4 +1,3 @@
-
 /** 
 Jennifer Dolatshahi
 Adv Empirical PS 2 
@@ -26,15 +25,21 @@ estpost tabstat lnYearly_gva manshare manufacturing_total allmanufacturing labor
 eststo r63, title("Round 63")
 estpost ttest lnYearly_gva Total_worker, by(post)
 eststo ttests, title("Mean differences")
-esttab * using tables.rtf, replace cells(mean(pattern(1 1 1 0) fmt(2)) sd(pattern(1 1 1 0) par) b(pattern(0 0 1) nostar fmt(2))) label title(Summary statistics) mtitles nonumbers nostar varwidth(25)
+esttab * using tables.rtf, replace cells(mean(pattern(1 1 1 0) fmt(3)) sd(pattern(1 1 1 0) par) b(pattern(0 0 1) nostar fmt(3))) label title(Summary statistics) mtitles nonumbers nostar varwidth(25)
 eststo clear
 
 /* check growth rate */
-tabstat lnYearly_gva, by(post)
-di (12.81555 - 12.40027)/5
+sum lnYearly_gva if post == 1
+gen lnm63 = r(mean)
+sum lnYearly_gva if post == 0
+gen lnm57 = r(mean)
+di (lnm63 - lnm57)/lnm57
 
-tabstat Total_worker, by(post)
-di (60.41097 - 12.74296)/5 
+sum Total_worker if post ==1
+gen m63w = r(mean)
+sum Total_worker if post == 0 
+gen m57w = r(mean)
+di(m63w - m57w)/m57w
 
 /* reduced form regs */
 gen labor_post = labor_reg*post
@@ -57,11 +62,8 @@ esttab * using tables.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label m
 eststo clear
 
 /* IV regs ivreg y (x = z), first */ 
-ssc install ivreg2
-ssc install ranktest
-
 eststo: ivreg lnYearly_gva (allmanu = labor_reg), r first
 eststo: xi: ivreg lnYearly_gva i.state (allmanu = labor_reg), r first
-eststo: xi: ivreg lnYearly_gva i.state i.NIC_io labor_reg allmanu post (manu_post = labor_post), r first
+eststo: xi: ivreg lnYearly_gva (manu_post = labor_post) i.state i.NIC_io labor_reg allmanu post , r first
 esttab * using tables.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(IV Regression)
 eststo clear

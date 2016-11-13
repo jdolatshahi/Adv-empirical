@@ -31,12 +31,13 @@ eststo model_15_85: reg dpass win if vote >=15 & vote <=85
 eststo model_2_95: reg dpass win if vote >=5 & vote <=95
 eststo model_30_70: reg dpass win if vote >=30 & vote <=70
 eststo model_40_60: reg dpass win if vote >=40 & vote <=60
-esttab * using tables3.rtf, replace b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Impact of GM status on pass rates - dpass)
+esttab * using tables3.rtf, replace b(3) se(3) varwidth(25) modelwidth(15) scalar(r2) label mtitles title(Impact of GM status on pass rates - dpass)
 eststo clear
 
+/* Q4 */
 eststo model_15_85: reg passrate2 win if vote >=15 & vote <=85
 eststo model_2_95: reg passrate2 win if vote >=5 & vote <=95
 eststo model_30_70: reg passrate2 win if vote >=30 & vote <=70
 eststo model_40_60: reg passrate2 win if vote >=40 & vote <=60
-esttab * using tables3.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Impact of GM status on pass rates - passrate2)
+esttab * using tables3.rtf, append b(3) se(3) varwidth(25) modelwidth(15) scalar(r2) label mtitles title(Impact of GM status on pass rates - passrate2)
 eststo clear

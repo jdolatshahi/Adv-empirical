@@ -25,3 +25,18 @@ graph tw (sca dpass vote if vote < 50) (sca dpass vote if vote >= 50), ytitle("C
 
 /* scatter local poly w/ CI */
 graph tw (sca dpass vote if vote < 50) (sca dpass vote if vote >= 50), ytitle("Change in pass rate between years 0 and 2") xtitle("vote share") legend(off) xline(50) || lpolyci dpass vote if vote <50 & vote >=40, bwidth(1)|| lpolyci dpass vote if vote >=50 & vote <=60, bwidth(1)
+
+/* Q3 */
+eststo model_15_85: reg dpass win if vote >=15 & vote <=85
+eststo model_2_95: reg dpass win if vote >=5 & vote <=95
+eststo model_30_70: reg dpass win if vote >=30 & vote <=70
+eststo model_40_60: reg dpass win if vote >=40 & vote <=60
+esttab * using tables3.rtf, replace b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Impact of GM status on pass rates - dpass)
+eststo clear
+
+eststo model_15_85: reg passrate2 win if vote >=15 & vote <=85
+eststo model_2_95: reg passrate2 win if vote >=5 & vote <=95
+eststo model_30_70: reg passrate2 win if vote >=30 & vote <=70
+eststo model_40_60: reg passrate2 win if vote >=40 & vote <=60
+esttab * using tables3.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Impact of GM status on pass rates - passrate2)
+eststo clear

@@ -14,17 +14,21 @@ global results "/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empir
 log using "$results/log_PS3.smcl", replace
 use "$datadir/PS 3 - Clark.dta", clear
 
+/* Q2 */
+/* scatterplot */
+graph tw (sca dpass vote if vote < 50) (sca dpass vote if vote >= 50), ytitle("Change in pass rate between years 0 and 2") xtitle("vote share") legend(off) xline(50) title("Scatterplot of change in pass rate by GM vote share")
+
 /* scatterplot quadratic fit */
-graph tw (sca dpass vote if vote < 50) (sca dpass vote if vote >= 50), ytitle("Change in pass rate between years 0 and 2") xtitle("vote share") legend(off) xline(50) || qfitci dpass vote if vote <50 || qfitci dpass vote if vote >=50, stdp
+graph tw (sca dpass vote if vote < 50) (sca dpass vote if vote >= 50), ytitle("Change in pass rate between years 0 and 2") xtitle("vote share") legend(off) xline(50) title("Scatterplot of change in pass rate by GM vote share") sub("quadratic fit") || qfitci dpass vote if vote <50 || qfitci dpass vote if vote >=50, stdp
 
 /* scatterplot cubic fit */
-graph tw (sca dpass vote if vote < 50) (sca dpass vote if vote >= 50), ytitle("Change in pass rate between years 0 and 2") xtitle("vote share") legend(off) xline(50) || lpolyci dpass vote if vote <50, degree(3) || lpolyci dpass vote if vote >=50, degree(3)
+graph tw (sca dpass vote if vote < 50) (sca dpass vote if vote >= 50), ytitle("Change in pass rate between years 0 and 2") xtitle("vote share") legend(off) xline(50) title("Scatterplot of change in pass rate by GM vote share") sub("cubic fit") || lpolyci dpass vote if vote <50, degree(3) || lpolyci dpass vote if vote >=50, degree(3)
 
 /* scatter local poly */
-graph tw (sca dpass vote if vote < 50) (sca dpass vote if vote >= 50), ytitle("Change in pass rate between years 0 and 2") xtitle("vote share") legend(off) xline(50) || lpoly dpass vote if vote <50 & vote >=40, bwidth(1) lc(black) lwi(thick) || lpoly dpass vote if vote >=50 & vote <=60, bwidth(1) lc(black) lwi(thick)
+graph tw (sca dpass vote if vote < 50) (sca dpass vote if vote >= 50), ytitle("Change in pass rate between years 0 and 2") xtitle("vote share") legend(off) xline(50) title("Scatterplot of change in pass rate by GM vote share") sub("local polynomial fit") || lpoly dpass vote if vote <50 & vote >=40, bwidth(1) lc(black) lwi(thick) || lpoly dpass vote if vote >=50 & vote <=60, bwidth(1) lc(black) lwi(thick)
 
 /* scatter local poly w/ CI */
-graph tw (sca dpass vote if vote < 50) (sca dpass vote if vote >= 50), ytitle("Change in pass rate between years 0 and 2") xtitle("vote share") legend(off) xline(50) || lpolyci dpass vote if vote <50 & vote >=40, bwidth(1)|| lpolyci dpass vote if vote >=50 & vote <=60, bwidth(1)
+graph tw (sca dpass vote if vote < 50) (sca dpass vote if vote >= 50), ytitle("Change in pass rate between years 0 and 2") xtitle("vote share") legend(off) xline(50) title("Scatterplot of change in pass rate by GM vote share") sub("local polynomial fit with CI")|| lpolyci dpass vote if vote <50 & vote >=40, bwidth(1)|| lpolyci dpass vote if vote >=50 & vote <=60, bwidth(1)
 
 /* Q3 */
 eststo model_15_85: reg dpass win if vote >=15 & vote <=85

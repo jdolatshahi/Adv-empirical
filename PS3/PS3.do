@@ -45,12 +45,13 @@ eststo clear
 /* RD */
 
 ssc install rd, replace
-rd passrate2 vote, gr z0(50) mbw(100)
-rd dpass vote, gr z0(50) mbw(100) 
+eststo passrate2: rd passrate2 vote, gr z0(50) mbw(100)
+eststo dpass: rd dpass vote, gr z0(50) mbw(100) 
+esttab * using tables3.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Regression Discontinuity Estimates)
+eststo clear
 
 /* Q5 */
 reg passrate0 win
 graph tw (sca passrate0 vote if vote < 50) (sca passrate0 vote if vote >=50), xline(50) || lpolyci passrate0 vote if vote <50 & vote >=40, bwidth(1)|| lpolyci passrate0 vote if vote >=50 & vote <=60, bwidth(1)
 
 
-"Change in pass rate between years 0 and 2") xtitle("vote share") legend(off) xline(50) || lpolyci passrate0 vote if vote <50 & vote >=40, bwidth(1)|| lpolyci dpass vote if vote >=50 & vote <=60, bwidth(1)

@@ -43,10 +43,10 @@ esttab * using tables3.rtf, append b(3) se(3) varwidth(25) modelwidth(15) scalar
 eststo clear
 
 /* RD */
-
 ssc install rd, replace
-eststo passrate2: rd passrate2 vote, gr z0(50) mbw(100)
-eststo dpass: rd dpass vote, gr z0(50) mbw(100) 
+rd passrate2 vote, gr z0(50)
+eststo passrate2: rd passrate2 vote if vote >=15 & vote <=85, gr z0(50)
+eststo dpass: rd dpass vote, gr z0(50)
 esttab * using tables3.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Regression Discontinuity Estimates)
 eststo clear
 
@@ -55,8 +55,12 @@ reg passrate0 win
 graph tw (sca passrate0 vote if vote < 50) (sca passrate0 vote if vote >=50), xline(50) || lpolyci passrate0 vote if vote <50 & vote >=40, bwidth(1)|| lpolyci passrate0 vote if vote >=50 & vote <=60, bwidth(1)
 
 /* Q6 */ 
-DCdensity vote, breakpoint(50) generate(Xj Yj r0 fhat se_fhat)
+eststo: DCdensity vote, breakpoint(50) generate(Xj Yj r0 fhat se_fhat)
+esttab * using tables3.rtf, append wide title(Discontinuity Density)
+eststo clear
 drop Xj Yj r0 fhat se_fhat
 
 /* Q7 */
-rd passrate2 vote, z0(50) mbw(75(5)125)
+eststo passrate2: rd passrate2 vote, z0(50) mbw(75(5)125)
+esttab * using tables3.rtf, append wide b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Sensitivity analyses)
+eststo clear

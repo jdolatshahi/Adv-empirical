@@ -67,4 +67,3 @@ eststo: xi: ivreg lnYearly_gva i.state (allmanu = labor_reg), r first
 eststo: xi: ivreg lnYearly_gva (manu_post = labor_post) i.state i.NIC_io labor_reg allmanu post , r first
 esttab * using tables.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(IV Regression)
 eststo clear
-

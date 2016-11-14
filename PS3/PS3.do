@@ -51,8 +51,10 @@ esttab * using tables3.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label 
 eststo clear
 
 /* Q5 */
-reg passrate0 win
-graph tw (sca passrate0 vote if vote < 50) (sca passrate0 vote if vote >=50), xline(50) || lpolyci passrate0 vote if vote <50 & vote >=40, bwidth(1)|| lpolyci passrate0 vote if vote >=50 & vote <=60, bwidth(1)
+eststo passrate0: reg passrate0 win
+esttab * using tables3.rtf, append wide b(3) se(3) label mtitles title(passrate0 regression)
+eststo clear
+graph tw (sca passrate0 vote if vote < 50) (sca passrate0 vote if vote >=50), xline(50) legend(off) || lpoly passrate0 vote if vote <50, lc(black) lwi(thick) || lpoly passrate0 vote if vote >= 50, lc(black) lwi(thick)
 
 /* Q6 */ 
 eststo: DCdensity vote, breakpoint(50) generate(Xj Yj r0 fhat se_fhat)
@@ -62,5 +64,6 @@ drop Xj Yj r0 fhat se_fhat
 
 /* Q7 */
 eststo passrate2: rd passrate2 vote, z0(50) mbw(75(5)125)
+eststo dpass: rd dpass vote, z0(50) mbw(75(5)125)
 esttab * using tables3.rtf, append wide b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Sensitivity analyses)
 eststo clear

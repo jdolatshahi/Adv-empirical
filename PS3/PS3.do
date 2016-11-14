@@ -57,3 +57,6 @@ graph tw (sca passrate0 vote if vote < 50) (sca passrate0 vote if vote >=50), xl
 /* Q6 */ 
 DCdensity vote, breakpoint(50) generate(Xj Yj r0 fhat se_fhat)
 drop Xj Yj r0 fhat se_fhat
+
+/* Q7 */
+rd passrate2 vote, z0(50) mbw(75(5)125)

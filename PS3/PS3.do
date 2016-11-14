@@ -55,5 +55,5 @@ reg passrate0 win
 graph tw (sca passrate0 vote if vote < 50) (sca passrate0 vote if vote >=50), xline(50) || lpolyci passrate0 vote if vote <50 & vote >=40, bwidth(1)|| lpolyci passrate0 vote if vote >=50 & vote <=60, bwidth(1)
 
 /* Q6 */ 
-DCdensity vote, breakpoint(50) generate(Xj Yj r0 fhat se_fhat) graphname(DCdensity)
+DCdensity vote, breakpoint(50) generate(Xj Yj r0 fhat se_fhat)
 drop Xj Yj r0 fhat se_fhat

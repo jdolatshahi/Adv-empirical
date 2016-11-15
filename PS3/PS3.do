@@ -53,8 +53,8 @@ eststo clear
 /* RD */
 ssc install rd, replace
 qui {
-eststo passrate2: rd passrate2 vote if vote >=15 & vote <=85, gr z0(50)
-eststo dpass: rd dpass vote, gr z0(50)
+eststo passrate2: rd passrate2 vote, z0(50)
+eststo dpass: rd dpass vote, z0(50)
 }
 esttab * using tables3.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Regression Discontinuity Estimates)
 eststo clear
@@ -62,8 +62,10 @@ eststo clear
 /* Q5 */
 qui {
 eststo passrate0: reg passrate0 win
+eststo model_1585: reg passrate0 win if vote >=15 & vote <= 85
+eststo model_4060: reg passrate0 win if vote >= 40 & vote <= 60
 }
-esttab * using tables3.rtf, append wide b(3) se(3) label mtitles title(passrate0 regression)
+esttab * using tables3.rtf, append b(3) se(3) label mtitles title(passrate0 regression)
 eststo clear
 
 graph tw (sca passrate0 vote if vote < 50) (sca passrate0 vote if vote >=50), xline(50) legend(off) xtitle("Vote share") ytitle("Pass rate year prior to GM vote") || lpoly passrate0 vote if vote <50, lc(black) lwi(thick) || lpoly passrate0 vote if vote >= 50, lc(black) lwi(thick)

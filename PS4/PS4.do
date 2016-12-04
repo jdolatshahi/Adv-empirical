@@ -41,6 +41,6 @@ eststo clear
 /* Q2 */
 ssc install nnmatch
 
-nnmatch re78 nonexptreat re74 re75, m(1) /* -10375.37 */
-nnmatch re78 treat re74 re75, m(1) /* -9380.339 */
+nnmatch re78 nonexptreat re74 re75, m(1) keep(nonexp.dta) /* -10375.37 */
+nnmatch re78 treat re74 re75, m(1) keep(exp.dta) /* -9380.339 */
 

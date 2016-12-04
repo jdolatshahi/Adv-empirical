@@ -32,20 +32,20 @@ graph tw (sca dpass vote if vote < 50) (sca dpass vote if vote >= 50), ytitle("C
 
 /* Q3 */
 qui {
-eststo model_15_85: reg dpass win if vote >=15 & vote <=85
-eststo model_2_95: reg dpass win if vote >=5 & vote <=95
-eststo model_30_70: reg dpass win if vote >=30 & vote <=70
-eststo model_40_60: reg dpass win if vote >=40 & vote <=60
+eststo model_15_85: reg dpass win if vote >=15 & vote <=85, r
+eststo model_2_95: reg dpass win if vote >=5 & vote <=95, r
+eststo model_30_70: reg dpass win if vote >=30 & vote <=70, r
+eststo model_40_60: reg dpass win if vote >=40 & vote <=60, r
 }
 esttab * using tables3.rtf, replace b(3) se(3) varwidth(25) modelwidth(15) scalar(r2) label mtitles title(Impact of GM status on pass rates - dpass)
 eststo clear
 
 /* Q4 */
 qui {
-eststo model_15_85: reg passrate2 win if vote >=15 & vote <=85
-eststo model_2_95: reg passrate2 win if vote >=5 & vote <=95
-eststo model_30_70: reg passrate2 win if vote >=30 & vote <=70
-eststo model_40_60: reg passrate2 win if vote >=40 & vote <=60
+eststo model_15_85: reg passrate2 win if vote >=15 & vote <=85, r
+eststo model_2_95: reg passrate2 win if vote >=5 & vote <=95, r
+eststo model_30_70: reg passrate2 win if vote >=30 & vote <=70, r
+eststo model_40_60: reg passrate2 win if vote >=40 & vote <=60, r
 }
 esttab * using tables3.rtf, append b(3) se(3) varwidth(25) modelwidth(15) scalar(r2) label mtitles title(Impact of GM status on pass rates - passrate2)
 eststo clear
@@ -53,17 +53,17 @@ eststo clear
 /* RD */
 ssc install rd, replace
 qui {
-eststo passrate2: rd passrate2 vote, z0(50)
-eststo dpass: rd dpass vote, z0(50)
+eststo passrate2: rd passrate2 vote, z0(50) r
+eststo dpass: rd dpass vote, z0(50) r
 }
 esttab * using tables3.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Regression Discontinuity Estimates)
 eststo clear
 
 /* Q5 */
 qui {
-eststo passrate0: reg passrate0 win
-eststo model_1585: reg passrate0 win if vote >=15 & vote <= 85
-eststo model_4060: reg passrate0 win if vote >= 40 & vote <= 60
+eststo passrate0: reg passrate0 win, r
+eststo model_1585: reg passrate0 win if vote >=15 & vote <= 85, r
+eststo model_4060: reg passrate0 win if vote >= 40 & vote <= 60, r
 }
 esttab * using tables3.rtf, append b(3) se(3) label mtitles title(passrate0 regression)
 eststo clear
@@ -81,8 +81,8 @@ drop Xj Yj r0 fhat se_fhat
 
 /* Q7 */
 qui {
-eststo passrate2: rd passrate2 vote, z0(50) mbw(75(5)125)
-eststo dpass: rd dpass vote, z0(50) mbw(75(5)125)
+eststo passrate2: rd passrate2 vote, r z0(50) mbw(75(5)125)
+eststo dpass: rd dpass vote, r z0(50) mbw(75(5)125)
 }
-esttab * using tables3.rtf, append wide b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Sensitivity analyses)
+esttab * using tables3.rtf, append b(3) se(3) varwidth(25) modelwidth(15) label mtitles title(Sensitivity analyses)
 eststo clear

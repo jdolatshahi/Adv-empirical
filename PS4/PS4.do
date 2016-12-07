@@ -63,30 +63,30 @@ use "$datadir/nonexp.dta", clear
 
 keep if nonexptreat == 1
 
-merge m:1 id using "treat", ///
-	keepusing(age_1m education_1m black_1m hispanic_1m married_1m nodegree_1m) ///
-	keep(master match) nogen
+merge m:1 id using "treat", keepusing(age_1m education_1m black_1m hispanic_1m married_1m nodegree_1m) keep(master match) nogen
 
 
-merge m:1 index using "comparison", ///
-	keepusing(age_0m education_0m black_0m hispanic_0m married_0m nodegree_0m) ///
-	keep(master match) nogen
+merge m:1 index using "comparison", keepusing(age_0m education_0m black_0m hispanic_0m married_0m nodegree_0m) keep(master match) nogen
 
 collapse (mean) re78-re75 km-dist re74_* re75_* education_*, by(id)
 
 
-tw (lfit re74 re74_0) (sca re74_0 re74_1)
-reg re74 re74_0
-ttest re74 == re74_0
+tw (lfit re74 re74_0) (sca re74 re74_0), ytitle("RE74 Treatment") xtitle("RE74 Matched Comparison")
+tw (lfit re75 re75_0) (sca re75 re75_0), ytitle("RE75 Treatment") xtitle("RE75 Matched Comparison")
 
-tw (lfit re75 re75_0) (sca re75 re75_0)
-reg re75 re75_0
+eststo RE74: reg re74 re74_0
+eststo RE75: reg re75 re75_0
+esttab * using tables4.rtf, append r2 mtitle title(Assessment of matching on RE74 and RE75)
+eststo clear
+
+ttest re74 == re74_0
 ttest re75 == re75_0
 
 /* Q3 */
 ttest education_1 == education_0
-reg education_1 education_0
-tw (lfit education_1 education_0) (sca education_1 education_0) 
+eststo: reg education_1 education_0
+esttab * using tables4.rtf, append r2 title(Assessment of matching on education)
+tw (lfit education_1 education_0) (sca education_1 education_0), ytitle("Education treatment") xtitle("Education comparison") 
 
 /* Q4 */
 use "$datadir/nsw_dw.dta", clear

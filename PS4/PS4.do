@@ -104,9 +104,9 @@ collapse re78-re75_2 km-re75_2_1m, by(id)
 
 local colnames "re74 re75 education black hispanic married re74_sq re75_sq"
 
-mat ttests = J(3,8,.)
+mat ttests = J(4,8,.)
 mat colnames ttests = `colnames'
-mat rownames ttests = Mean_treatment Mean_comparison SE
+mat rownames ttests = Mean_treatment Mean_comparison Mean_diff SE
 
 local i = 1
 foreach var in re74 re75 education black hispanic married re74_2 re75_2 {
@@ -114,7 +114,8 @@ ttest `var' == `var'_0m
 
 mat ttests[1,`i'] = round(r(mu_1), .001)
 mat ttests[2,`i'] = round(r(mu_2), .001)
-mat ttests[3,`i'] = round(r(se), .001)
+mat ttests[3,`i'] = round(r(mu_1) - r(mu_2), .001)
+mat ttests[4,`i'] = round(r(se), .001)
 
 
 local i = `i' + 1

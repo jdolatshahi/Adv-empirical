@@ -15,9 +15,6 @@ global results "/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empir
 log using "$results/log_PS4.smcl", replace
 use "$datadir/nsw_dw.dta", clear
 
-ssc install psmatch2
-/* can run psgraph and pstest as post hoc tests */
-
 /* Q1 covariates */
 estpost tabstat age education black hispanic married nodegree if data_id == "Dehejia-Wahba Sample", by(treat) s(me sem) columns(statistics)
 eststo exp, title("Experimental sample")
@@ -39,10 +36,12 @@ esttab * using tables4.rtf, append b(2) se(2) label mtitles title(Mean differenc
 eststo clear 
 
 /* Q2 */
-ssc install nnmatch
 
 nnmatch re78 nonexptreat re74 re75, m(1) keep(nonexp.dta) replace /* -10475.37 */
-ttest re78 if data_id == "Dehejia-Wahba Sample", by(treat)
+estpost ttest re78 if data_id == "Dehejia-Wahba Sample", by(treat)
+eststo ttestre78
+esttab * using tables4.rtf, append b(2) se(2) label mtitles title(Experimental treatment effect)
+eststo clear
 
 gen id = _n
 gen index = _n
@@ -76,7 +75,7 @@ tw (lfit re75 re75_0) (sca re75 re75_0), ytitle("RE75 Treatment") xtitle("RE75 M
 
 eststo RE74: reg re74 re74_0
 eststo RE75: reg re75 re75_0
-esttab * using tables4.rtf, append r2 mtitle title(Assessment of matching on RE74 and RE75)
+esttab * using tables4.rtf, append r2 b(3) se(3) mtitle title(Assessment of matching on RE74 and RE75)
 eststo clear
 
 ttest re74 == re74_0
@@ -117,9 +116,80 @@ mat ttests[2,`i'] = round(r(mu_2), .001)
 mat ttests[3,`i'] = round(r(mu_1) - r(mu_2), .001)
 mat ttests[4,`i'] = round(r(se), .001)
 
-
 local i = `i' + 1
-
 
 }
 mat li ttests
+
+
+// Q5 & Q6 //
+use "$datadir/nsw_dw.dta", clear
+gen nonexptreat = .
+replace nonexptreat = 1 if data_id == "Dehejia-Wahba Sample" & treat == 1
+replace nonexptreat = 0 if data_id == "PSID"
+gen re74_2 = re74*re74
+gen re75_2 = re75*re75
+
+
+set seed 1234
+gen random = uniform()
+sort random
+
+
+psmatch2 nonexptreat re74 re75 education black hispanic married re74_2 re75_2, com outcome(re78) ate
+psgraph, title(Covariates RE74 RE75 Education Black Hispanic Married RE74^2 RE75^2)
+pstest re74 re75 education black hispanic married re74_2 re75_2
+
+gen ps5 = _pscore
+
+eststo spec5: reg re78 nonexptreat re74 re75 education black hispanic married re74_2 re75_2 [pweight = 1/_pscore]
+esttab spec5 using tables4.rtf, append
+
+// Q7 //
+
+use "$datadir/nsw_dw.dta", clear
+gen nonexptreat = .
+replace nonexptreat = 1 if data_id == "Dehejia-Wahba Sample" & treat == 1
+replace nonexptreat = 0 if data_id == "PSID"
+gen re74_2 = re74*re74
+gen re75_2 = re75*re75
+
+set seed 1234
+gen random = uniform()
+sort random
+
+psmatch2 nonexptreat re74 re75 black hispanic married re74_2 re75_2, com outcome(re78) ate
+psgraph, title(Specification 2)
+pstest re74 re75 black hispanic married
+
+gen noedu = education*nodegree
+
+drop random
+set seed 1234
+gen random = uniform()
+sort random
+
+psmatch2 nonexptreat re74 re75 black hispanic married noedu nodegree education, outcome(re78) ate
+psgraph
+pstest re74 re75 black hispanic married noedu nodegree education
+
+
+psmatch2 nonexptreat re74 re75 black hispanic married noedu nodegree education re74_2 re75_2, outcome(re78) ate
+pstest re74 re75 black hispanic married noedu nodegree education re74_2 re75_2
+psgraph 
+gen ps7 = _pscore
+
+eststo spec7: reg re78 nonexptreat re74 re75 black hispanic married noedu nodegree education re74_2 re75_2
+esttab spec7 using tables4.rtf, append
+// Q8 //
+
+
+reg re78 nonexptreat [pweight = 1/_pscore]
+reg re78 nonexptreat
+
+eststo spec5: reg re78 nonexptreat re74 re75 education black hispanic married re74_2 re75_2
+
+eststo spec7: reg re78 nonexptreat re74 re75 black hispanic married noedu nodegree education re74_2 re75_2
+esttab using tables4.rtf, append mtitles
+
+eststo clear

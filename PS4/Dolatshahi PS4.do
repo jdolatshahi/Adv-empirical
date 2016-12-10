@@ -177,19 +177,26 @@ pstest re74 re75 black hispanic married noedu nodegree education
 psmatch2 nonexptreat re74 re75 black hispanic married noedu nodegree education re74_2 re75_2, outcome(re78) ate
 pstest re74 re75 black hispanic married noedu nodegree education re74_2 re75_2
 psgraph 
-gen ps7 = _pscore
 
 eststo spec7: reg re78 nonexptreat re74 re75 black hispanic married noedu nodegree education re74_2 re75_2
 esttab spec7 using tables4.rtf, append
 // Q8 //
 
+logit nonexptreat re74 re75 education black hispanic married re74_2 re75_2
+predict ps5
 
-reg re78 nonexptreat [pweight = 1/_pscore]
-reg re78 nonexptreat
+logit nonexptreat re74 re75 black hispanic married noedu nodegree education
+predict ps_7
 
-eststo spec5: reg re78 nonexptreat re74 re75 education black hispanic married re74_2 re75_2
+gen ps = 1/ps7 if nonexptreat == 1
+replace ps = 1/(1-ps7) if nonexptreat == 0 
 
-eststo spec7: reg re78 nonexptreat re74 re75 black hispanic married noedu nodegree education re74_2 re75_2
-esttab using tables4.rtf, append mtitles
+gen ps_5 = 1/ps5 if nonexptreat == 1 
+replace ps_5 = 1/(1-ps5) if nonexptreat == 0 
+
+
+eststo spec5: reg re78 nonexptreat re74 re75 education black hispanic married re74_2 re75_2 [pweight = 1/ps_5]
+eststo spec7: reg re78 nonexptreat re74 re75 black hispanic married noedu nodegree education [pweight = 1/ps]
+esttab using tables4.rtf, append b(2) se(2) mtitles title(Regressions with Propensity Score Weighting)
 
 eststo clear

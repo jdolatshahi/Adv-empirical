@@ -186,7 +186,7 @@ logit nonexptreat re74 re75 education black hispanic married re74_2 re75_2
 predict ps5
 
 logit nonexptreat re74 re75 black hispanic married noedu nodegree education
-predict ps_7
+predict ps7
 
 gen ps = 1/ps7 if nonexptreat == 1
 replace ps = 1/(1-ps7) if nonexptreat == 0 

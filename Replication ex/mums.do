@@ -47,7 +47,7 @@ label var girl1 "Firstborn girl"
 /* chborn */ 
 gen everborn = .
 replace everborn = 0 if chborn <= 1 
-else replace everborn = chborn-1
+else replace everborn = chborn - 1
 label var everborn "Children ever born"
 
 /* age @ first birth */
@@ -56,8 +56,8 @@ label var agefb "Age at first birth"
 
 /* educ yrs */ 
 gen educyrs = . 
-replace educyrs = 0 if higrade <= 3
-else replace educyrs = higrade-3
+replace educyrs = higrade - 3
+replace educyrs = 0 if higrade < = 3 & higrade > 0
 label var educyrs "Years of education" 
 
 /* urban */ 
@@ -109,10 +109,16 @@ estpost tabstat firstend agemarr girl1 everborn agefb age educyrs urban stdhhinc
 eststo inhh, title("All Children Live in Household")
 estpost tabstat firstend agemarr girl1 everborn agefb age educyrs urban stdhhinc povertyline nwinc inctot incwage if inhh == 1 & fiveyears == 1, s(me sd) columns(statistics)
 eststo fiveyears, title("1st Child Born Within 5 Years of 1st Marriage")
-esttab * , main(mean 2) aux(sd 2) label mtitles 
+esttab * using replication.rtf, replace main(mean 2) aux(sd 2) label mtitles 
 
 eststo clear
 
-
 // TABLE 2 //
 keep if inhh == 1 & fiveyears == 1
+gen divorce = . 
+replace divorce = 1 if marst == 3 | marst == 4 | marrno ==2 
+replace divorce = 0 if missing(divorce)
+
+eststo unadj1: reg divorce girl1
+eststo unadj2: reg divorce girl1 if educyrs 
+gen age2 = age*age

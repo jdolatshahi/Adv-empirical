@@ -232,8 +232,8 @@ replace employed = 0 if empstat == 2 | empstat == 3
 label var employed "Working for pay"
 label define yesno 1 "Yes" 0 "No"
 label val employed yesno 
-/* OLS col 1 */
 
+/* OLS col 1 */
 foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
 qui reg `yvar' divorce age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea, r
 eststo `yvar'
@@ -245,7 +245,7 @@ local storelist = "`storelist' `yvar'"
 esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles title(OLS)
 
 /* wald col 2 */
-ivregress 2sls stdhhinc (div = girl1), vce(r)
+// test - ivregress 2sls stdhhinc (div = girl1), vce(r)
 
 foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
 qui ivregress 2sls `yvar' (divorce = girl1), vce(r) first
@@ -258,9 +258,7 @@ esttab `storelist' using tables.rtf, append b(3) se(3) noobs nostar nonum label 
 eststo clear
 
 /* 2sls col 3 */
-age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea
-
-ivregress 2sls stdhhinc age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (div = girl1), vce(r) 
+// test - ivregress 2sls stdhhinc age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (div = girl1), vce(r) 
 
 foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
 qui ivregress 2sls `yvar' age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (divorce = girl1), vce(r)
@@ -270,5 +268,27 @@ local storelist = "`storelist' `yvar'"
 }
 
 esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles title(TSLS)
+eststo clear
+
+/* 2sls col4 use everborn & new var*/ 
+age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea
+
+/* new marital status var */
+gen mar = 1 if marst == 1 | marst == 2 
+gen mar1 = 1 if marrno == 2
+gen mar2 = 1 if mar == 1 & mar1 == 1
+replace mar2 = 0 if missing(mar2)
+label var mar2 "Currently married, 2+ marriages"
+label val mar2 yesno
+drop mar mar1
+
+foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
+qui ivregress 2sls `yvar' everborn mar2 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (divorce = girl1), vce(r)
+eststo `yvar'
+
+local storelist = "`storelist' `yvar'"
+}
+
+esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles title(TSLS4)
 eststo clear
 

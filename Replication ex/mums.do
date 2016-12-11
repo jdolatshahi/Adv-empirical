@@ -13,6 +13,8 @@ global results "/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empir
 log using "$results/log_MUMS.smcl", replace
 use "$datadir/mums.dta", clear
 
+rename * , lower
+
 /* ALLOCATED VAR */
 /* currently age 21 - 40; ever been married; 1st marriage 17 - 26; U.S. Born, including Amer. Samoa, Guam, PR, U.S. VI, Other US Posessions; white; not widow */
 gen elig = .
@@ -148,6 +150,7 @@ gen ageeduc = age*educyrs
 gen marreduc = agemarr*educyrs
 gen fbeduc = agefb*educyrs
 
+
 qui {
 eststo overall: qui reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea
 test girl1
@@ -195,7 +198,6 @@ eststo clear
 
 // TABLE 3 DIFFERENCES IN MEANS //
 
-
 estpost tabstat agemarr girl1 everborn agefb age educyrs urban, by(divorce) s(me sd) columns(statistics)
 eststo divorce, title("By Divorce Status") 
 estpost tabstat divorce agemarr everborn agefb age educyrs urban, by(girl1) s(me sd) columns(statistics)
@@ -224,3 +226,22 @@ eststo urb: reg urban girl, r
 esttab * using tables.rtf, append b(3) se(3) noobs nocons nonum label title(Mean diffs for table 3 firstborn)
 eststo clear
 
+// TABLE 4 //
+gen employed = 1 if empstat == 1
+replace employed = 0 if empstat == 2 | empstat == 3
+label var employed "Working for pay"
+label define yesno 1 "Yes" 0 "No"
+label val employed yesno 
+/* OLS col 1 */
+
+foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
+qui reg `yvar' divorce age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea, r
+eststo `yvar'
+
+local storelist = "`storelist' `yvar'"
+
+}
+
+esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) noobs nonum label mtitles title(OLS)
+
+/* wald col 2 */

@@ -271,8 +271,6 @@ esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noob
 eststo clear
 
 /* 2sls col4 use everborn & new var*/ 
-age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea
-
 /* new marital status var */
 gen mar = 1 if marst == 1 | marst == 2 
 gen mar1 = 1 if marrno == 2

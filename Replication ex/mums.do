@@ -119,6 +119,8 @@ gen divorce = .
 replace divorce = 1 if marst == 3 | marst == 4 | marrno ==2 
 replace divorce = 0 if missing(divorce)
 
+/* unadjusted */
+qui {
 eststo overall: reg divorce girl1
 eststo educ1: reg divorce girl1 if educyrs < 12
 eststo educ2: reg divorce girl1 if educyrs == 12
@@ -128,13 +130,11 @@ eststo firstmar1: reg divorce girl1 if agemarr <20
 eststo firstmar2: reg divorce girl1 if agemarr >= 20
 eststo agebirth1: reg divorce girl1 if agefb <22
 eststo agebirth2: reg divorce girl1 if agefb >=22
-esttab * , b scalars(F)
+}
+esttab * using tables.rtf, replace b(2) scalars(F N) mtitles
 eststo clear
 
-
-
-// run test after reg to get f-stats for each coeff?
-
+/* adjusted */
 gen age2 = age*age
 gen agemarr2 = agemarr*agemarr
 gen agefb2 = agefb*agefb
@@ -143,4 +143,51 @@ gen ageeduc = age*educyrs
 gen marreduc = agemarr*educyrs
 gen fbeduc = agefb*educyrs
 
+qui {
+eststo overall: qui reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea
+test girl1
+estadd scalar F_test = r(F)
+
+eststo educ1: qui reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if educyrs < 12
+test girl1
+estadd scalar F_test = r(F)
+
+eststo educ1: reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if educyrs < 12
+test girl1
+estadd scalar F_test = r(F) 
+
+eststo educ2: reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if educyrs == 12
+test girl1
+estadd scalar F_test = r(F) 
+
+eststo educ3: reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if educyrs >= 13 & educyrs <= 15
+test girl1
+estadd scalar F_test = r(F) 
+
+eststo educ4: reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if educyrs >= 16
+test girl1 
+estadd scalar F_test = r(F) 
+
+eststo firstmar1: reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if agemarr <20
+test girl1 
+estadd scalar F_test = r(F) 
+
+eststo firstmar2: reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if agemarr >= 20
+test girl1
+estadd scalar F_test = r(F) 
+
+eststo agebirth1: reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if agefb <22
+test girl1
+estadd scalar F_test = r(F) 
+
+eststo agebirth2: reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if agefb >=22
+test girl1
+estadd scalar F_test = r(F) 
+}
+esttab * using tables.rtf, append b(3) scalars(F_test N) keep(girl1) obslast mtitles
+
 eststo clear
+
+// TABLE 3 DIFFERENCES IN MEANS //
+gen divstatus = .
+replace divstatus = 1 

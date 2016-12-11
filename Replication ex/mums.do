@@ -119,6 +119,28 @@ gen divorce = .
 replace divorce = 1 if marst == 3 | marst == 4 | marrno ==2 
 replace divorce = 0 if missing(divorce)
 
-eststo unadj1: reg divorce girl1
-eststo unadj2: reg divorce girl1 if educyrs 
+eststo overall: reg divorce girl1
+eststo educ1: reg divorce girl1 if educyrs < 12
+eststo educ2: reg divorce girl1 if educyrs == 12
+eststo educ3: reg divorce girl1 if educyrs >= 13 & educyrs <= 15
+eststo educ4: reg divorce girl1 if educyrs >= 16
+eststo firstmar1: reg divorce girl1 if agemarr <20
+eststo firstmar2: reg divorce girl1 if agemarr >= 20
+eststo agebirth1: reg divorce girl1 if agefb <22
+eststo agebirth2: reg divorce girl1 if agefb >=22
+esttab * , b scalars(F)
+eststo clear
+
+
+
+// run test after reg to get f-stats for each coeff?
+
 gen age2 = age*age
+gen agemarr2 = agemarr*agemarr
+gen agefb2 = agefb*agefb
+gen educyrs2 = educyrs*educyrs
+gen ageeduc = age*educyrs
+gen marreduc = agemarr*educyrs
+gen fbeduc = agefb*educyrs
+
+eststo clear

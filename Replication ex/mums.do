@@ -189,7 +189,7 @@ eststo agebirth2: reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marred
 test girl1
 estadd scalar F_test = r(F) 
 }
-esttab * using tables.rtf, append b(3) scalars(F_test N) keep(girl1) obslast mtitles
+esttab * using tables.rtf, append b(3) scalars(F_test N) keep(girl1) not nonum mtitles
 
 eststo clear
 
@@ -200,25 +200,27 @@ estpost tabstat agemarr girl1 everborn agefb age educyrs urban, by(divorce) s(me
 eststo divorce, title("By Divorce Status") 
 estpost tabstat divorce agemarr everborn agefb age educyrs urban, by(girl1) s(me sd) columns(statistics)
 eststo girl1, title("By Firstborn Sex")
-esttab * ., main(mean 3) aux(sd 3) unstack label mtitles
+esttab * using tables.rtf, append main(mean 3) aux(sd 3) unstack label mtitles nonum
 
+eststo clear
 
+eststo am: reg agemarr div, r
+eststo girl: reg girl1 div, r
+eststo everborn: reg everborn div, r
+eststo fb: reg agefb div, r
+eststo age: reg age div, r
+eststo educ: reg educyrs div, r
+eststo urb: reg urban div, r
+esttab * using tables.rtf, append b(3) se(3) noobs nocons nonum label title(Mean diffs for table 3)
+eststo clear
 
+eststo div: reg div girl, r
+eststo am: reg agemarr girl, r
+eststo everborn: reg everborn girl, r
+eststo fb: reg agefb girl, r
+eststo age: reg age girl, r /* reverse sign */
+eststo educ: reg educyrs girl, r
+eststo urb: reg urban girl, r
+esttab * using tables.rtf, append b(3) se(3) noobs nocons nonum label title(Mean diffs for table 3 firstborn)
+eststo clear
 
-mat ttests = J(5,7,.)
-mat colnames ttests = `colnames'
-mat rownames ttests = Never-divorced Ever-divorced Difference Observations
-
-local i = 1
-foreach var in agemarr girl1 everborn agefb age educyrs urban {
-ttest `var', by(divorce)
-
-mat ttests[1,`i'] = round(r(mu_1), .001)
-mat ttests[2,`i'] = round(r(mu_2), .001)
-mat ttests[3,`i'] = round(r(mu_1) - r(mu_2), .001)
-mat ttests[4,`i'] = r(N_1)
-mat ttests[5,`i'] = r(N_2) 
-local i = `i' + 1
-
-}
-mat li ttests

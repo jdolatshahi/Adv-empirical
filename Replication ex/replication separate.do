@@ -24,29 +24,52 @@ forvalues i = 1/`r(max)' {
 	replace child = 1 if momloc > 00 | poploc > 00
 	egen work = max(age*child), by(serial)
 	replace eldage = work if child == 1 & age == work
-	replace eldchild = 1 if !missing(eldage)
-    drop child work eldage 
+	replace eldchild = 1 if !missing(eldage) 
+	drop child work eldage
+
 }
+
+
+
+
+/* # children, # adults per household */ 
+sort serial 
+qui by serial: gen adult = _n if age >= 18
+qui by serial: egen adults = max(adult)
+
+sort serial adult
+qui by serial adult: gen child = _n if age < 18
+qui by serial adult: egen minor = max(child) 
+
+sort serial 
+qui by serial: egen minors = max(minor)
+
+drop child adult minor
+
+replace minors = 0 if missing(minors)
+replace adults = 0 if missing(adults)
+
+qui by serial: gen hhsize = adults + minors
+
+save usa_edited, replace 
 
 /** RUN ONE OR THE OTHER, NOT BOTH */ 
 /* MUMS DATASET  8, 298, 300 */
 /* ever born children - don't actually need sex */
+
 gen mum = .
 replace mum = 1 if chborn >= 2 & sex ==2 /* 1 or more children - 3,044,820  */
 keep if mum == 1
 save mums.dta, replace
 
 /* KIDS DATASET 3,917,651 */
+
+use usa_edited.dta, clear
+
 gen child = .
 replace child = 1 if momloc >00
 keep if child == 1 
 save child.dta, replace
-
-/* SPOUSE DATASET ?????*/
-
-
-
-
 
 
 /* delete families w/ eldest child allocated */

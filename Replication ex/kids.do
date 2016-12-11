@@ -31,3 +31,4 @@ keep if famelig == 1
 gen serialpernum = string(serial, "%02.0f")+string(momloc, "%02.0f")
 
 save childelig.dta, replace 
+

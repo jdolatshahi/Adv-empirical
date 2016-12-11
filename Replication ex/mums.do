@@ -43,6 +43,8 @@ label var agemarr "Age at first marriage"
 gen girl1 = 1 if sex_c == 2
 replace girl1 = 0 if sex_c == 1
 label var girl1 "Firstborn girl"
+label define girlboy 1 "Girl" 0 "Boy"
+label value girl1 girlboy
 
 /* chborn */ 
 gen everborn = .
@@ -118,6 +120,9 @@ keep if inhh == 1 & fiveyears == 1
 gen divorce = . 
 replace divorce = 1 if marst == 3 | marst == 4 | marrno ==2 
 replace divorce = 0 if missing(divorce)
+label define divorce 1 "Ever-divorced" 0 "Never-divorced"
+label val divorce divorce
+label var divorce Divorce
 
 /* unadjusted */
 qui {
@@ -189,5 +194,31 @@ esttab * using tables.rtf, append b(3) scalars(F_test N) keep(girl1) obslast mti
 eststo clear
 
 // TABLE 3 DIFFERENCES IN MEANS //
-gen divstatus = .
-replace divstatus = 1 
+
+
+estpost tabstat agemarr girl1 everborn agefb age educyrs urban, by(divorce) s(me sd) columns(statistics)
+eststo divorce, title("By Divorce Status") 
+estpost tabstat divorce agemarr everborn agefb age educyrs urban, by(girl1) s(me sd) columns(statistics)
+eststo girl1, title("By Firstborn Sex")
+esttab * ., main(mean 3) aux(sd 3) unstack label mtitles
+
+
+
+
+mat ttests = J(5,7,.)
+mat colnames ttests = `colnames'
+mat rownames ttests = Never-divorced Ever-divorced Difference Observations
+
+local i = 1
+foreach var in agemarr girl1 everborn agefb age educyrs urban {
+ttest `var', by(divorce)
+
+mat ttests[1,`i'] = round(r(mu_1), .001)
+mat ttests[2,`i'] = round(r(mu_2), .001)
+mat ttests[3,`i'] = round(r(mu_1) - r(mu_2), .001)
+mat ttests[4,`i'] = r(N_1)
+mat ttests[5,`i'] = r(N_2) 
+local i = `i' + 1
+
+}
+mat li ttests

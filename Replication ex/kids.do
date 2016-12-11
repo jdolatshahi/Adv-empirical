@@ -5,6 +5,8 @@ prog drop _all
 capture log close
 set more off, permanently
 
+cd "/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empirical/Adv-empirical/Replication ex"
+
 global datadir "/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empirical/Adv-empirical/Replication ex"
 global results "/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empirical/Adv-empirical/Replication ex"
 
@@ -12,13 +14,20 @@ log using "$results/log_KIDS.smcl", replace
 use "$datadir/child.dta", clear
 
 /* FAM ELIG */ 
-/* eldest child & not allocated age, sex, relationship to hh, or birth quarter */
+/* eldest child & not allocated age, sex, relationship to hh, or birth quarter, not twins */
+sort serial eldchild age birthqtr
+qui by serial eldchild age birthqtr: gen twins = cond(_N == 1 , 0 , 1)
+
 gen famelig = . 
-replace famelig = 1 if eldchild == 1 & qage == 0 & qsex == 0 & qrelate == 0 & qbirthmo == 0 
+replace famelig = 1 if eldchild == 1 & twins ! = 1 & qage == 0 & qsex == 0 & qrelate == 0 & qbirthmo == 0 
+
+rename age age_c 
+label var age_c "Age of child"
+rename sex sex_c
+label var sex_c "Sex of child"
+
+keep if famelig == 1
 
 gen serialpernum = string(serial, "%02.0f")+string(momloc, "%02.0f")
 
-save child.dta, replace 
-
-/* RESHAPE NEED TO FIGURE OUT WHICH VARS TO PUT IN*/ 
-reshape wide ANCESTR1 - famelig, i(serial) j(pernum)
+save childelig.dta, replace 

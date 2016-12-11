@@ -261,3 +261,14 @@ eststo clear
 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea
 
 ivregress 2sls stdhhinc age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (div = girl1), vce(r) 
+
+foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
+qui ivregress 2sls `yvar' age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (divorce = girl1), vce(r)
+eststo `yvar'
+
+local storelist = "`storelist' `yvar'"
+}
+
+esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles title(TSLS)
+eststo clear
+

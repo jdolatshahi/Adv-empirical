@@ -138,7 +138,7 @@ eststo firstmar2: reg divorce girl1 if agemarr >= 20
 eststo agebirth1: reg divorce girl1 if agefb <22
 eststo agebirth2: reg divorce girl1 if agefb >=22
 }
-esttab * using tables.rtf, replace b(2) scalars(F N) mtitles
+esttab * using tables.rtf, replace b(2) scalars(F N) mtitles label
 eststo clear
 
 /* adjusted */
@@ -192,7 +192,7 @@ eststo agebirth2: reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marred
 test girl1
 estadd scalar F_test = r(F) 
 }
-esttab * using tables.rtf, append b(3) scalars(F_test N) keep(girl1) not nonum mtitles
+esttab * using tables.rtf, append b(3) scalars(F_test N) keep(girl1) not nonum mtitles label
 
 eststo clear
 
@@ -203,7 +203,6 @@ eststo divorce, title("By Divorce Status")
 estpost tabstat divorce agemarr everborn agefb age educyrs urban, by(girl1) s(me sd) columns(statistics)
 eststo girl1, title("By Firstborn Sex")
 esttab * using tables.rtf, append main(mean 3) aux(sd 3) unstack label mtitles nonum
-
 eststo clear
 
 eststo am: reg agemarr div, r
@@ -242,7 +241,7 @@ local storelist = "`storelist' `yvar'"
 
 }
 
-esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles title(OLS)
+esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles(`yvar') title(OLS)
 
 /* wald col 2 */
 // test - ivregress 2sls stdhhinc (div = girl1), vce(r)

@@ -254,7 +254,7 @@ eststo `yvar'
 local storelist = "`storelist' `yvar'"
 }
 
-esttab `storelist' using tables.rtf, append b(3) se(3) noobs nostar nonum label mtitles title(WALD)
+esttab `storelist' using tables.rtf, append b(3) se(3) noobs nostar nonum label mtitles(`yvar') title(WALD)
 eststo clear
 
 /* 2sls col 3 */
@@ -267,7 +267,7 @@ eststo `yvar'
 local storelist = "`storelist' `yvar'"
 }
 
-esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles title(TSLS)
+esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles(`yvar') title(TSLS)
 eststo clear
 
 /* 2sls col4 use everborn & new var*/ 
@@ -287,7 +287,7 @@ eststo `yvar'
 local storelist = "`storelist' `yvar'"
 }
 
-esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles title(TSLS4)
+esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles(`yvar') title(TSLS4)
 eststo clear
 
 //TABLE 5 //
@@ -300,4 +300,21 @@ local storelist = "`storelist' `yvar'"
 
 }
 
-esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles title(OLS <12)
+esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles(`yvar') title(OLS <12)
+eststo clear
+
+/* col 3 OLS */
+
+foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
+qui reg `yvar' divorce age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if age_c >= 12, r
+eststo `yvar'
+
+local storelist = "`storelist' `yvar'"
+
+}
+
+esttab `storelist' using tables.rtf, append label b(3) se(3) keep(divorce) nostar noobs mtitles(`yvar') title(OLS 12+)
+eststo clear
+
+/* col 2 TSLS */
+

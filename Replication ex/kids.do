@@ -14,9 +14,12 @@ log using "$results/log_KIDS.smcl", replace
 use "$datadir/child.dta", clear
 
 /* FAM ELIG */ 
-/* eldest child & not allocated age, sex, relationship to hh, or birth quarter, not twins */
+
+//twins
 sort serial eldchild age birthqtr
 qui by serial eldchild age birthqtr: gen twins = cond(_N == 1 , 0 , 1)
+
+/* eldest child & not allocated age, sex, relationship to hh, or birth quarter, not twins */
 
 gen famelig = . 
 replace famelig = 1 if eldchild == 1 & twins ! = 1 & qage == 0 & qsex == 0 & qrelate == 0 & qbirthmo == 0 

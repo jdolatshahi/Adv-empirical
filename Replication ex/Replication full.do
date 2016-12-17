@@ -31,7 +31,7 @@ forvalues i = 1/`r(max)' {
 
 }
 
-
+drop child work eldage
 
 
 /* # children, # adults per household */ 
@@ -63,7 +63,6 @@ replace child = 1 if momloc >00
 keep if child == 1 
 save child.dta, replace
 
-
 //twins by age birthqtr 65, 803
 sort serial eldchild age birthqtr
 qui by serial eldchild age birthqtr: gen twins = cond(_N == 1 , 0 , 1)
@@ -72,7 +71,7 @@ qui by serial eldchild age birthqtr: gen twins = cond(_N == 1 , 0 , 1)
 sort serial eldchild age
 qui by serial eldchild age: gen twinsage = cond(_N == 1, 0, 1) 
 
-// eldest child & not allocated age, sex, relationship to hh, or birth quarter, not twins 
+// eldest child & not allocated age, sex, relationship to hh, or birth quarter
 
 gen famelig = . 
 replace famelig = 1 if eldchild == 1 & qage == 0 & qsex == 0 & qrelate == 0 & qbirthmo == 0 & stepmom == 0 
@@ -96,33 +95,39 @@ use usa_edited.dta, clear
 
 gen mum = .
 replace mum = 1 if chborn >= 2 & sex ==2 /* 1 or more children - 3,044,820  */
+
 keep if mum == 1
 save mums.dta, replace
 
 
 //________________________________________
+
 /** FINAL SAMPLE **/
 use mums.dta, clear
 
 rename * , lower
 
-/* ALLOCATED VAR */
-/* currently age 21 - 40; ever been married; 1st marriage 17 - 26; U.S. Born, including Amer. Samoa, Guam, PR, U.S. VI, Other US Posessions; white; not widow */
+
+// currently age 21 - 40; ever been married; 1st marriage 17 - 26; U.S. Born, including Amer. Samoa, Guam, PR, U.S. VI, Other US Posessions; white; not widow */
 gen elig = .
 replace elig = 1 if age >= 21 & age <= 40 & marst >= 1 & marst < 5 & agemarr >=17 & agemarr <= 26 & bpl >=1 & bpl <= 120 & race == 1
+replace elig = 0 if missing(elig)
 
-/* MERGE IN CHILD SET */
+gen notallocated = .
+replace notallocated = 1 if qage == 0 & qmarrno == 0 & qmarst == 0 & qagemarr == 0 & qchborn == 0 & qrelate == 0 & qsex == 0 
+replace notallocated = 0 if missing(notallocated)
+
+
+// MERGE IN CHILD SET
 gen serialpernum = string(serial, "%02.0f")+string(pernum, "%02.0f")
 
 merge 1:m serialpernum using childelig.dta 
 
-// tab elig famelig = 661, 188!
+// tab elig famelig 663, 980
 
-gen notallocated = .
-replace notallocated = 1 if qage == 0 | qmarrno == 0 | qmarst == 0 | qagemarr == 0 | qchborn == 0 | qrelate == 0 | qsex == 0 
+tab elig famelig if notallocated == 1 /* 614, 830??? */
 
-
-keep if famelig == 1 & elig == 1
+keep if elig == 1 & famelig == 1
 
 // TABLE 1 - DESCRIPTIVES //
 
@@ -171,11 +176,57 @@ replace standardizer = standardizer^0.7
 gen stdhhinc = hhincome/standardizer
 label var stdhhinc "Standardized Household Income"
 
-/* poverty */ 
+/* hh_poverty */ 
 gen povertyline = .
 replace povertyline = 1 if poverty <100
 replace povertyline = 0 if poverty >= 100
 label var povertyline "Poverty"
+
+gen people=1
+
+gen poverty_hh=0
+replace poverty_hh=172*hhincome/6310 if adults==1 & minors==0 
+replace poverty_hh=172*hhincome/8547 if adults==1 & minors==1 
+replace poverty_hh=172*hhincome/9990 if adults==1 & minors==2 
+replace poverty_hh=172*hhincome/12619 if adults==1 & minors==3 
+replace poverty_hh=172*hhincome/14572 if adults==1 & minors==4 
+replace poverty_hh=172*hhincome/16259 if adults==1 & minors==5 
+replace poverty_hh=172*hhincome/17828 if adults==1 & minors>=6 
+replace poverty_hh=172*hhincome/8303 if adults==2 & minors==0 
+replace poverty_hh=172*hhincome/9981 if adults==2 & minors==1 
+replace poverty_hh=172*hhincome/12575 if adults==2 & minors==2 
+replace poverty_hh=172*hhincome/14798 if adults==2 & minors==3 
+replace poverty_hh=172*hhincome/16569 if adults==2 & minors==4 
+replace poverty_hh=172*hhincome/18558 if adults==2 & minors==5 
+replace poverty_hh=172*hhincome/20403 if adults==2 & minors>=6 
+replace poverty_hh=172*hhincome/9699 if adults==3 & minors==0 
+replace poverty_hh=172*hhincome/12999 if adults==3 & minors==1 
+replace poverty_hh=172*hhincome/15169 if adults==3 & minors==2 
+replace poverty_hh=172*hhincome/17092 if adults==3 & minors==3 
+replace poverty_hh=172*hhincome/19224 if adults==3 & minors==4 
+replace poverty_hh=172*hhincome/21084 if adults==3 & minors==5 
+replace poverty_hh=172*hhincome/25089 if adults==3 & minors>=6 
+replace poverty_hh=172*hhincome/12790 if adults==4 & minors==0 
+replace poverty_hh=172*hhincome/15648 if adults==4 & minors==1 
+replace poverty_hh=172*hhincome/17444 if adults==4 & minors==2 
+replace poverty_hh=172*hhincome/19794 if adults==4 & minors==3 
+replace poverty_hh=172*hhincome/21738 if adults==4 & minors==4 
+replace poverty_hh=172*hhincome/25719 if adults==4 & minors>=5 
+replace poverty_hh=172*hhincome/15424 if adults==5 & minors==0 
+replace poverty_hh=172*hhincome/17811 if adults==5 & minors==1 
+replace poverty_hh=172*hhincome/20101 if adults==5 & minors==2 
+replace poverty_hh=172*hhincome/22253 if adults==5 & minors==3 
+replace poverty_hh=172*hhincome/26415 if adults==5 & minors>=4 
+replace poverty_hh=172*hhincome/17740 if adults==6 & minors==0 
+replace poverty_hh=172*hhincome/20540 if adults==6 & minors==1 
+replace poverty_hh=172*hhincome/22617 if adults==6 & minors==2 
+replace poverty_hh=172*hhincome/26921 if adults==6 & minors>=3 
+replace poverty_hh=172*hhincome/20412 if adults==7 & minors==0 
+replace poverty_hh=172*hhincome/23031 if adults==7 & minors==1 
+replace poverty_hh=172*hhincome/27229 if adults==7 & minors>=2 
+replace poverty_hh=172*hhincome/22830 if adults==8 & minors==0 
+replace poverty_hh=172*hhincome/27596 if adults==8 & minors>=1 
+replace poverty_hh=172*hhincome/27463 if adults>=9 & minors>=0
 
 /* nonwoman income */ 
 gen nwinc = hhincome - inctot
@@ -204,11 +255,11 @@ label var fiveyears "1st Child Born Within 5 Years of 1st Marriage"
 /* output table 1 */ 
 estpost tabstat firstend agemarr everborn age educyrs urban stdhhinc povertyline nwinc inctot incwage, s(me sd) columns(statistics)
 eststo evermar, title("Ever-Married with Children")
-estpost tabstat firstend agemarr girl1 everborn agefb age educyrs urban stdhhinc povertyline nwinc inctot incwage if inhh == 1, s(me sd) columns(statistics)
+estpost tabstat firstend agemarr girl1 everborn agefb age educyrs urban stdhhinc povertyline nwinc inctot incwage if inhh == 1 & twins != 1, s(me sd) columns(statistics)
 eststo inhh, title("All Children Live in Household")
-estpost tabstat firstend agemarr girl1 everborn agefb age educyrs urban stdhhinc povertyline nwinc inctot incwage if inhh == 1 & fiveyears == 1, s(me sd) columns(statistics)
+estpost tabstat firstend agemarr girl1 everborn agefb age educyrs urban stdhhinc povertyline nwinc inctot incwage if inhh == 1 & fiveyears == 1 & twins !=1, s(me sd) columns(statistics)
 eststo fiveyears, title("1st Child Born Within 5 Years of 1st Marriage")
-esttab * using replication.rtf, replace main(mean 2) aux(sd 2) label mtitles 
+esttab * ., replace main(mean 2) aux(sd 2) label mtitles 
 
 eststo clear
 

@@ -62,17 +62,14 @@ gen kid = 1 if momloc >00
 keep if kid == 1 
 save child.dta, replace
 
-//twins by age birthqtr 65, 803
+//twins by age birthqtr 65, 274
 qui bysort serial eldchild age birthqtr: gen twins = cond(_N == 1 , 0 , 1)
 
-// twins just by age 109, 384
-sort serial eldchild age
+// twins just by age 107, 484
+
 qui bysort serial eldchild age: gen twinsage = cond(_N == 1, 0, 1) 
-replace twinsage = 0 if twins == 1 
 
-qui bysort serial eldchild age: gen select = cond(twinsage == 1 & birthqtr[_n] < birthqtr[_n+1], 1, 0)
-
-replace eldchild = 0 if eldchild == 1 & twinsage == 1 & select == 0 
+// just use twins
 
 // eldest child & not allocated age, sex, relationship to hh, or birth quarter
 
@@ -126,10 +123,10 @@ gen serialpernum = string(serial, "%02.0f")+string(pernum, "%02.0f")
 
 merge 1:m serialpernum using childelig.dta 
 
-// tab elig famelig 663, 980
+// tab elig famelig  689,695 
 
 replace famelig = 1
-tab elig famelig if notallocated == 1 /* 636, 754??? */
+tab elig famelig if notallocated == 1 /*   637,947 ??? */
 
 keep if elig == 1 & famelig == 1
 

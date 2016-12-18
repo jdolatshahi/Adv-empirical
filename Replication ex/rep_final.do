@@ -135,6 +135,9 @@ replace urban = 0 if metarea == 0
 label var urban "Urban"
 
 /* household standardized income */ 
+replace hhincome = . if hhincome == 9999999
+replace hhincome = -9900 if hhincome == -9995
+
 gen standardizer = adults + 0.7*minors
 replace standardizer = standardizer^0.7
 

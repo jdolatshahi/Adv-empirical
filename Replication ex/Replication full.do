@@ -17,7 +17,7 @@ use "$datadir/usa_00005.dta", clear
 order *, alpha
 rename *, lower
 
-/* IDENTIFY ELDEST CHILD - 2,008,371 */
+/* IDENTIFY ELDEST CHILD - 1,964,278 */
 
 gen eldchild = .
 gen eldage = .
@@ -122,7 +122,7 @@ gen serialpernum = string(serial, "%02.0f")+string(pernum, "%02.0f")
 
 merge 1:m serialpernum using childelig.dta 
 
-// tab elig famelig  689,695 
+// tab elig famelig  708,738
 
 tab elig famelig if notallocated == 1 /*   655, 849 ??? */
 

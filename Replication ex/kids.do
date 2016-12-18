@@ -15,23 +15,29 @@ use "$datadir/child.dta", clear
 
 /* FAM ELIG */ 
 
-//twins
+//twins by age birthqtr 65, 803
 sort serial eldchild age birthqtr
 qui by serial eldchild age birthqtr: gen twins = cond(_N == 1 , 0 , 1)
+
+// twins just by age 109, 384
+sort serial eldchild age
+qui by serial eldchild age: gen twinsage = cond(_N == 1, 0, 1) 
+
 
 /* eldest child & not allocated age, sex, relationship to hh, or birth quarter, not twins */
 
 gen famelig = . 
-replace famelig = 1 if eldchild == 1 & twins ! = 1 & qage == 0 & qsex == 0 & qrelate == 0 & qbirthmo == 0 
+replace famelig = 1 if eldchild == 1 & qage == 0 & qsex == 0 & qrelate == 0 & qbirthmo == 0 
 
 rename age age_c 
 label var age_c "Age of child"
 rename sex sex_c
 label var sex_c "Sex of child"
+rename momrule_c
+label var momrule_c "Mom Rule for child"
 
 keep if famelig == 1
 
 gen serialpernum = string(serial, "%02.0f")+string(momloc, "%02.0f")
 
 save childelig.dta, replace 
-

@@ -16,28 +16,27 @@ use "$datadir/usa_00005.dta", clear
 
 order *, alpha
 
-/* IDENTIFY ELDEST CHILD - use this. 1,970,592 */
+/* IDENTIFY ELDEST CHILD - use this. 2,008,371 */
 
 gen eldchild = .
 gen eldage = .
 gen child = .
-summarize pernum
-forvalues i = 1/`r(max)' {
-	replace child = 1 if momloc > 00 | poploc > 00
-	egen work = max(age*child), by(serial)
-	replace eldage = work if child == 1 & age == work
-	replace eldchild = 1 if !missing(eldage) 
-	drop child work eldage
-
-}
-
+replace child = 1 if momloc > 00
+egen work = max(age*child), by(serial momloc)
+replace eldage = work if child == 1 & age == work
+replace eldchild = 1 if !missing(eldage) 
 drop child work eldage
 
-
 /* # children, # adults per household */ 
+qui bysort serial: egen adults = total(age >= 18)    
+qui bysort serial: egen minors = total(age < 18)
+qui bysort serial: gen hhsize = _N
+
+/*
 sort serial 
-qui by serial: gen adult = _n if age >= 18
-qui by serial: egen adults = max(adult)
+qui bysort serial: gen adult = _n if age >= 18
+
+
 
 sort serial adult
 qui by serial adult: gen child = _n if age < 18
@@ -51,25 +50,29 @@ drop child adult minor
 replace minors = 0 if missing(minors)
 replace adults = 0 if missing(adults)
 
-qui by serial: gen hhsize = adults + minors
+qui by serial: gen hhsize = adults + minors */
 
 save usa_edited, replace 
 
 
 /** KIDS DATASET **/
 
-gen child = .
-replace child = 1 if momloc >00
-keep if child == 1 
+use usa_edited, clear
+gen kid = 1 if momloc >00
+keep if kid == 1 
 save child.dta, replace
 
 //twins by age birthqtr 65, 803
-sort serial eldchild age birthqtr
-qui by serial eldchild age birthqtr: gen twins = cond(_N == 1 , 0 , 1)
+qui bysort serial eldchild age birthqtr: gen twins = cond(_N == 1 , 0 , 1)
 
 // twins just by age 109, 384
 sort serial eldchild age
-qui by serial eldchild age: gen twinsage = cond(_N == 1, 0, 1) 
+qui bysort serial eldchild age: gen twinsage = cond(_N == 1, 0, 1) 
+replace twinsage = 0 if twins == 1 
+
+qui bysort serial eldchild age: gen select = cond(twinsage == 1 & birthqtr[_n] < birthqtr[_n+1], 1, 0)
+
+replace eldchild = 0 if eldchild == 1 & twinsage == 1 & select == 0 
 
 // eldest child & not allocated age, sex, relationship to hh, or birth quarter
 
@@ -125,7 +128,8 @@ merge 1:m serialpernum using childelig.dta
 
 // tab elig famelig 663, 980
 
-tab elig famelig if notallocated == 1 /* 614, 830??? */
+replace famelig = 1
+tab elig famelig if notallocated == 1 /* 636, 754??? */
 
 keep if elig == 1 & famelig == 1
 

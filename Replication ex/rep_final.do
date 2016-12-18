@@ -14,6 +14,9 @@ global results "/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empir
 *log using "$results/log_replicationfull.smcl", replace
 use "$datadir/usa_00005.dta", clear
 
+cd "/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empirical/Adv-empirical/Replication ex"
+/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empirical/Adv-empirical/Replication ex
+
 order *, alpha
 rename *, lower
 
@@ -238,7 +241,7 @@ esttab * using replication.rtf, replace main(mean 2) aux(sd 2) label mtitles o(f
 eststo clear
 
 // TABLE 2 //
-keep if inhh == 1 & fiveyears == 1
+keep if sample3 == 1 
 gen divorce = . 
 replace divorce = 1 if marst == 3 | marst == 4 | marrno ==2 
 replace divorce = 0 if missing(divorce)
@@ -258,7 +261,7 @@ eststo firstmar2: reg divorce girl1 if agemarr >= 20
 eststo agebirth1: reg divorce girl1 if agefb <22
 eststo agebirth2: reg divorce girl1 if agefb >=22
 }
-esttab * using tables.rtf, replace b(2) scalars(F N) mtitles label
+esttab * using table2.rtf, replace b(3) scalars(F N) sfmt(2) mtitles label not nostar nocons
 eststo clear
 
 /* adjusted */
@@ -312,7 +315,7 @@ eststo agebirth2: reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marred
 test girl1
 estadd scalar F_test = r(F) 
 }
-esttab * using tables.rtf, append b(3) scalars(F_test N) keep(girl1) not nonum mtitles label
+esttab * using table2.rtf, append b(3) scalars(F_test N) sfmt(2) keep(girl1) not nostar nonum mtitles label
 
 eststo clear
 
@@ -322,7 +325,7 @@ estpost tabstat agemarr girl1 everborn agefb age educyrs urban, by(divorce) s(me
 eststo divorce, title("By Divorce Status") 
 estpost tabstat divorce agemarr everborn agefb age educyrs urban, by(girl1) s(me sd) columns(statistics)
 eststo girl1, title("By Firstborn Sex")
-esttab * using tables.rtf, append main(mean 3) aux(sd 3) unstack label mtitles nonum
+esttab * using table3.rtf, replace main(mean 3) aux(sd 3) unstack label mtitles nonum
 eststo clear
 
 eststo am: reg agemarr div, r
@@ -332,7 +335,7 @@ eststo fb: reg agefb div, r
 eststo age: reg age div, r
 eststo educ: reg educyrs div, r
 eststo urb: reg urban div, r
-esttab * using tables.rtf, append b(3) se(3) noobs nocons nonum label title(Mean diffs for table 3)
+esttab * using table3.rtf, append b(3) se(3) noobs nocons nonum label title(Mean diffs for table 3)
 eststo clear
 
 eststo div: reg div girl, r
@@ -342,7 +345,7 @@ eststo fb: reg agefb girl, r
 eststo age: reg age girl, r /* reverse sign */
 eststo educ: reg educyrs girl, r
 eststo urb: reg urban girl, r
-esttab * using tables.rtf, append b(3) se(3) noobs nocons nonum label title(Mean diffs for table 3 firstborn)
+esttab * using table3.rtf, append b(3) se(3) noobs nocons nonum label title(Mean diffs for table 3 firstborn)
 eststo clear
 
 // TABLE 4 //

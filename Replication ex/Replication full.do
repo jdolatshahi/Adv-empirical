@@ -15,22 +15,25 @@ log using "$results/log_replicationfull.smcl", replace
 use "$datadir/usa_00005.dta", clear
 
 order *, alpha
+rename *, lower
 
-/* IDENTIFY ELDEST CHILD - use this. 2,008,371 */
+/* IDENTIFY ELDEST CHILD - 2,008,371 */
 
 gen eldchild = .
 gen eldage = .
 gen child = .
-replace child = 1 if momloc > 00
+replace child = 1 if momloc > 00 & stepmom == 0 
 egen work = max(age*child), by(serial momloc)
 replace eldage = work if child == 1 & age == work
 replace eldchild = 1 if !missing(eldage) 
-drop child work eldage
+drop child work eldage 
 
 /* # children, # adults per household */ 
 qui bysort serial: egen adults = total(age >= 18)    
 qui bysort serial: egen minors = total(age < 18)
 qui bysort serial: gen hhsize = _N
+
+save usa_edited.dta, replace 
 
 /*
 sort serial 
@@ -52,13 +55,12 @@ replace adults = 0 if missing(adults)
 
 qui by serial: gen hhsize = adults + minors */
 
-save usa_edited, replace 
 
 
 /** KIDS DATASET **/
 
-use usa_edited, clear
-gen kid = 1 if momloc >00
+use usa_edited.dta, clear
+gen kid = 1 if momloc >00 & stepmom == 0 
 keep if kid == 1 
 save child.dta, replace
 
@@ -67,14 +69,14 @@ qui bysort serial eldchild age birthqtr: gen twins = cond(_N == 1 , 0 , 1)
 
 // twins just by age 107, 484
 
-qui bysort serial eldchild age: gen twinsage = cond(_N == 1, 0, 1) 
+// qui bysort serial eldchild age: gen twinsage = cond(_N == 1, 0, 1) 
 
 // just use twins
 
 // eldest child & not allocated age, sex, relationship to hh, or birth quarter
 
 gen famelig = . 
-replace famelig = 1 if eldchild == 1 & qage == 0 & qsex == 0 & qrelate == 0 & qbirthmo == 0 & stepmom == 0 
+replace famelig = 1 if eldchild == 1 & qage == 0 & qsex == 0 & qrelate == 0 & qbirthmo == 0
 
 rename age age_c 
 label var age_c "Age of child"
@@ -83,11 +85,10 @@ label var sex_c "Sex of child"
 rename momrule momrule_c
 label var momrule_c "Mom Rule for child"
 
-keep if famelig == 1
-
 gen serialpernum = string(serial, "%02.0f")+string(momloc, "%02.0f")
 
 save childelig.dta, replace 
+
 
 /* *  MUMS DATASET * */
 
@@ -111,11 +112,9 @@ rename * , lower
 // currently age 21 - 40; ever been married; 1st marriage 17 - 26; U.S. Born, including Amer. Samoa, Guam, PR, U.S. VI, Other US Posessions; white; not widow */
 gen elig = .
 replace elig = 1 if age >= 21 & age <= 40 & marst >= 1 & marst < 5 & agemarr >=17 & agemarr <= 26 & bpl >=1 & bpl <= 120 & race == 1
-replace elig = 0 if missing(elig)
 
 gen notallocated = .
 replace notallocated = 1 if qage == 0 & qmarrno == 0 & qmarst == 0 & qagemarr == 0 & qchborn == 0 & qrelate == 0 & qsex == 0 
-replace notallocated = 0 if missing(notallocated)
 
 
 // MERGE IN CHILD SET
@@ -125,8 +124,7 @@ merge 1:m serialpernum using childelig.dta
 
 // tab elig famelig  689,695 
 
-replace famelig = 1
-tab elig famelig if notallocated == 1 /*   637,947 ??? */
+tab elig famelig if notallocated == 1 /*   655, 849 ??? */
 
 keep if elig == 1 & famelig == 1
 

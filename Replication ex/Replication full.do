@@ -19,14 +19,6 @@ rename *, lower
 
 /* IDENTIFY ELDEST CHILD - 1,964,278 */
 
-gen eldchild = .
-gen eldage = .
-gen child = .
-replace child = 1 if momloc > 00 & stepmom == 0 
-egen work = max(age*child), by(serial momloc)
-replace eldage = work if child == 1 & age == work
-replace eldchild = 1 if !missing(eldage) 
-drop child work eldage 
 
 /* # children, # adults per household */ 
 qui bysort serial: egen adults = total(age >= 18)    
@@ -60,11 +52,19 @@ qui by serial: gen hhsize = adults + minors */
 /** KIDS DATASET **/
 
 use usa_edited.dta, clear
-gen kid = 1 if momloc >00 & stepmom == 0 
-keep if kid == 1 
+keep if momloc >00 & stepmom == 0
 save child.dta, replace
 
-//twins by age birthqtr 65, 274
+gen eldchild = .
+gen eldage = .
+gen child = .
+replace child = 1 if momloc > 00 & stepmom == 0 
+egen work = max(age*child), by(serial momloc)
+replace eldage = work if child == 1 & age == work
+replace eldchild = 1 if !missing(eldage) 
+drop child work eldage 
+
+//twins by age birthqtr 62, 149
 qui bysort serial eldchild age birthqtr: gen twins = cond(_N == 1 , 0 , 1)
 
 // twins just by age 107, 484
@@ -78,26 +78,26 @@ qui bysort serial eldchild age birthqtr: gen twins = cond(_N == 1 , 0 , 1)
 gen famelig = . 
 replace famelig = 1 if eldchild == 1 & qage == 0 & qsex == 0 & qrelate == 0 & qbirthmo == 0
 
-rename age age_c 
+rename (age sex momrule) =_c
 label var age_c "Age of child"
-rename sex sex_c
 label var sex_c "Sex of child"
-rename momrule momrule_c
 label var momrule_c "Mom Rule for child"
 
 gen serialpernum = string(serial, "%02.0f")+string(momloc, "%02.0f")
 
 save childelig.dta, replace 
 
+use childelig.dta, clear
+keep if eldchild == 1
+
+save childelig2.dta, replace
 
 /* *  MUMS DATASET * */
 
 use usa_edited.dta, clear
 
-gen mum = .
-replace mum = 1 if chborn >= 2 & sex ==2 /* 1 or more children - 3,044,820  */
+keep if chborn >= 2 & sex ==2 /* 1 or more children - 3,044,820  */
 
-keep if mum == 1
 save mums.dta, replace
 
 
@@ -122,11 +122,14 @@ gen serialpernum = string(serial, "%02.0f")+string(pernum, "%02.0f")
 
 merge 1:m serialpernum using childelig.dta 
 
+merge 1:m serialpernum using childelig2.dta 
+
 // tab elig famelig  708,738
 
 tab elig famelig if notallocated == 1 /*   655, 849 ??? */
 
-keep if elig == 1 & famelig == 1
+keep if elig == 1 & famelig == 1 & notallocated == 1
+
 
 // TABLE 1 - DESCRIPTIVES //
 
@@ -226,6 +229,7 @@ replace poverty_hh=172*hhincome/27229 if adults==7 & minors>=2
 replace poverty_hh=172*hhincome/22830 if adults==8 & minors==0 
 replace poverty_hh=172*hhincome/27596 if adults==8 & minors>=1 
 replace poverty_hh=172*hhincome/27463 if adults>=9 & minors>=0
+replace poverty_hh = poverty_hh/100
 
 /* nonwoman income */ 
 gen nwinc = hhincome - inctot
@@ -252,11 +256,11 @@ replace fiveyears = 0 if missing(fiveyears)
 label var fiveyears "1st Child Born Within 5 Years of 1st Marriage"
 
 /* output table 1 */ 
-estpost tabstat firstend agemarr everborn age educyrs urban stdhhinc povertyline nwinc inctot incwage, s(me sd) columns(statistics)
+estpost tabstat firstend agemarr everborn age educyrs urban stdhhinc poverty_hh nwinc inctot incwage, s(me sd) columns(statistics)
 eststo evermar, title("Ever-Married with Children")
-estpost tabstat firstend agemarr girl1 everborn agefb age educyrs urban stdhhinc povertyline nwinc inctot incwage if inhh == 1 & twins != 1, s(me sd) columns(statistics)
+estpost tabstat firstend agemarr girl1 everborn agefb age educyrs urban stdhhinc poverty_hh nwinc inctot incwage if inhh == 1 & twins != 1, s(me sd) columns(statistics)
 eststo inhh, title("All Children Live in Household")
-estpost tabstat firstend agemarr girl1 everborn agefb age educyrs urban stdhhinc povertyline nwinc inctot incwage if inhh == 1 & fiveyears == 1 & twins !=1, s(me sd) columns(statistics)
+estpost tabstat firstend agemarr girl1 everborn agefb age educyrs urban stdhhinc poverty_hh nwinc inctot incwage if inhh == 1 & fiveyears == 1 & twins !=1, s(me sd) columns(statistics)
 eststo fiveyears, title("1st Child Born Within 5 Years of 1st Marriage")
 esttab * ., replace main(mean 2) aux(sd 2) label mtitles 
 

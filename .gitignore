@@ -24,3 +24,5 @@ Replication ex/.DS_Store
 *.doc
 
 Replication ex/poverty_hh_code.do
+
+Replication ex/usa_00005.dta.crdownload

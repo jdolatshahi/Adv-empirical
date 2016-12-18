@@ -325,8 +325,11 @@ estpost tabstat agemarr girl1 everborn agefb age educyrs urban, by(divorce) s(me
 eststo divorce, title("By Divorce Status") 
 estpost tabstat divorce agemarr everborn agefb age educyrs urban, by(girl1) s(me sd) columns(statistics)
 eststo girl1, title("By Firstborn Sex")
-esttab * using table3.rtf, replace main(mean 3) aux(sd 3) unstack label mtitles nonum
+esttab * using table3.rtf, replace main(mean 3) aux(sd 3) unstack label mtitles nonum o(divorce agemarr girl1 everborn agefb age educyrs urban)
 eststo clear
+
+tab divorce // N never-div = 375,992 div 89,223
+tab girl1 // n girl = 226,958 boy = 238, 247
 
 eststo am: reg agemarr div, r
 eststo girl: reg girl1 div, r
@@ -335,7 +338,7 @@ eststo fb: reg agefb div, r
 eststo age: reg age div, r
 eststo educ: reg educyrs div, r
 eststo urb: reg urban div, r
-esttab * using table3.rtf, append b(3) se(3) noobs nocons nonum label title(Mean diffs for table 3)
+esttab * using table3.rtf, append b(3) se(3) noobs nocons nonum nostar label title(Mean diffs div for table 3)
 eststo clear
 
 eststo div: reg div girl, r
@@ -345,7 +348,7 @@ eststo fb: reg agefb girl, r
 eststo age: reg age girl, r /* reverse sign */
 eststo educ: reg educyrs girl, r
 eststo urb: reg urban girl, r
-esttab * using table3.rtf, append b(3) se(3) noobs nocons nonum label title(Mean diffs for table 3 firstborn)
+esttab * using table3.rtf, append b(3) se(3) noobs nocons nonum nostar label title(Mean diffs girl1 for table 3 firstborn)
 eststo clear
 
 // TABLE 4 //

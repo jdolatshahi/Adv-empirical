@@ -52,8 +52,6 @@ label var momrule_c "Mom Rule for child"
 
 gen merge_id = string(serial, "%02.0f")+string(momloc, "%02.0f")
 
-keep merge_id *_c
-
 save child.dta, replace
 
 /* *  MUMS DATASET * */
@@ -198,7 +196,7 @@ replace poverty_hh=172*hhincome/27229 if adults==7 & minors>=2
 replace poverty_hh=172*hhincome/22830 if adults==8 & minors==0 
 replace poverty_hh=172*hhincome/27596 if adults==8 & minors>=1 
 replace poverty_hh=172*hhincome/27463 if adults>=9 & minors>=0
-replace poverty_hh = poverty_hh/100 
+//replace poverty_hh = poverty_hh/100 
 label var poverty_hh "Household poverty"
 
 /* nonwoman income */ 
@@ -353,18 +351,11 @@ eststo clear
 
 // TABLE 4 //
 
-
-
 gen employed = 1 if empstat == 1
 replace employed = 0 if empstat == 2 | empstat == 3
 label var employed "Working for pay"
 label define yesno 1 "Yes" 0 "No"
 label val employed yesno 
-
-//START HERE 
-save usingdata.dta, replace
-use usingdata.dta, clear 
-
 
 /* OLS col 1 */
 foreach yvar of varlist stdhhinc poverty_hh nwinc inctot incwage employed wkswork1 uhrswork {

@@ -418,6 +418,7 @@ foreach yvar of varlist stdhhinc poverty_hh nwinc inctot incwage employed wkswor
 qui ivregress 2sls `yvar' everborn mar2 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (divorce = girl1), vce(r)
 eststo `yvar'
 
+
 local storelist = "`storelist' `yvar'"
 }
 
@@ -426,6 +427,7 @@ eststo clear
 
 //TABLE 5 //
 /* col 2 OLS */
+
 foreach yvar of varlist stdhhinc poverty_hh nwinc inctot incwage employed wkswork1 uhrswork {
 qui reg `yvar' divorce age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if age_c < 12, r
 eststo `yvar'
@@ -434,7 +436,7 @@ local storelist = "`storelist' `yvar'"
 
 }
 
-esttab `storelist' using tables.rtf, append b(3) se(3) scalar(F_test) keep(divorce) nostar nonum label mtitles(`yvar') title(OLS <12)
+esttab `storelist' using table5.rtf, replace b(3) se(3) keep(divorce) nostar nonum label mtitles(`yvar') title(OLS <12)
 eststo clear
 
 /* col 3 OLS */
@@ -447,7 +449,7 @@ local storelist = "`storelist' `yvar'"
 
 }
 
-esttab `storelist' using tables.rtf, append label b(3) se(3) keep(divorce) nostar mtitles(`yvar') title(OLS 12+)
+esttab `storelist' using table5.rtf, append label b(3) se(3) keep(divorce) nostar mtitles(`yvar') title(OLS 12+)
 eststo clear
 
 /* col 2 TSLS */
@@ -460,12 +462,12 @@ eststo `yvar'
 local storelist = "`storelist' `yvar'"
 }
 
-esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar nonum label mtitles(`yvar') title(TSLS <12)
+esttab `storelist' using table5.rtf, append b(3) se(3) keep(divorce) nostar nonum label mtitles(`yvar') title(TSLS <12)
 eststo clear
 
 /* F-stat */
 qui reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if age_c <12, r
-test girl1 /** 13.37 **/
+test girl1 /** 16.75**/
 
 /* col 3 TSLS */
 // test ivregress 2sls stdhhinc age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (divorce = girl1) if age_c >=12, vce(r) first
@@ -477,9 +479,9 @@ eststo `yvar'
 local storelist = "`storelist' `yvar'"
 }
 
-esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar nonum label mtitles(`yvar') title(TSLS 12+)
+esttab `storelist' using table5.rtf, append b(3) se(3) keep(divorce) nostar nonum label mtitles(`yvar') title(TSLS 12+)
 eststo clear
 
 /* F-stat */
 qui reg divorce girl1 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if age_c >=12, r
-test girl1 /** 27.67 **/
+test girl1 /** 29.48 **/

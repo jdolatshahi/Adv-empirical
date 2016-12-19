@@ -382,7 +382,7 @@ eststo clear
 // test - ivregress 2sls stdhhinc (div = girl1), vce(r)
 
 foreach yvar of varlist stdhhinc poverty_hh nwinc inctot incwage employed wkswork1 uhrswork {
-qui ivregress 2sls `yvar' (divorce = girl1), vce(r) first
+qui ivregress 2sls `yvar' (divorce = girl1), vce(r)
 eststo `yvar'
 
 local storelist = "`storelist' `yvar'"

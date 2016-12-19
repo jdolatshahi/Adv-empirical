@@ -352,14 +352,22 @@ esttab * using table3.rtf, append b(3) se(3) noobs nocons nonum nostar label tit
 eststo clear
 
 // TABLE 4 //
+
+
+
 gen employed = 1 if empstat == 1
 replace employed = 0 if empstat == 2 | empstat == 3
 label var employed "Working for pay"
 label define yesno 1 "Yes" 0 "No"
 label val employed yesno 
 
+//START HERE 
+save usingdata.dta, replace
+use usingdata.dta, clear 
+
+
 /* OLS col 1 */
-foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
+foreach yvar of varlist stdhhinc poverty_hh nwinc inctot incwage employed wkswork1 uhrswork {
 qui reg `yvar' divorce age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea, r
 eststo `yvar'
 
@@ -367,33 +375,33 @@ local storelist = "`storelist' `yvar'"
 
 }
 
-esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles(`yvar') title(OLS)
+esttab `storelist' using table4.rtf, replace b(3) se(3) keep(divorce) nostar noobs nonum label mtitles(`yvar') title(OLS)
 eststo clear 
 
 /* wald col 2 */
 // test - ivregress 2sls stdhhinc (div = girl1), vce(r)
 
-foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
+foreach yvar of varlist stdhhinc poverty_hh nwinc inctot incwage employed wkswork1 uhrswork {
 qui ivregress 2sls `yvar' (divorce = girl1), vce(r) first
 eststo `yvar'
 
 local storelist = "`storelist' `yvar'"
 }
 
-esttab `storelist' using tables.rtf, append b(3) se(3) noobs nostar nonum label mtitles(`yvar') title(WALD)
+esttab `storelist' using table4.rtf, append b(3) se(3) nocons noobs nostar nonum label mtitles(`yvar') title(WALD)
 eststo clear
 
 /* 2sls col 3 */
 // test - ivregress 2sls stdhhinc age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (div = girl1), vce(r) 
 
-foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
+foreach yvar of varlist stdhhinc poverty_hh nwinc inctot incwage employed wkswork1 uhrswork {
 qui ivregress 2sls `yvar' age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (divorce = girl1), vce(r)
 eststo `yvar'
 
 local storelist = "`storelist' `yvar'"
 }
 
-esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles(`yvar') title(TSLS)
+esttab `storelist' using table4.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles(`yvar') title(TSLS)
 eststo clear
 
 /* 2sls col4 use everborn & new var*/ 
@@ -406,19 +414,19 @@ label var mar2 "Currently married, 2+ marriages"
 label val mar2 yesno
 drop mar mar1
 
-foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
+foreach yvar of varlist stdhhinc poverty_hh nwinc inctot incwage employed wkswork1 uhrswork {
 qui ivregress 2sls `yvar' everborn mar2 age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (divorce = girl1), vce(r)
 eststo `yvar'
 
 local storelist = "`storelist' `yvar'"
 }
 
-esttab `storelist' using tables.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles(`yvar') title(TSLS4)
+esttab `storelist' using table4.rtf, append b(3) se(3) keep(divorce) nostar noobs nonum label mtitles(`yvar') title(TSLS4)
 eststo clear
 
 //TABLE 5 //
 /* col 2 OLS */
-foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
+foreach yvar of varlist stdhhinc poverty_hh nwinc inctot incwage employed wkswork1 uhrswork {
 qui reg `yvar' divorce age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if age_c < 12, r
 eststo `yvar'
 
@@ -431,7 +439,7 @@ eststo clear
 
 /* col 3 OLS */
 
-foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
+foreach yvar of varlist stdhhinc poverty_hh nwinc inctot incwage employed wkswork1 uhrswork  {
 qui reg `yvar' divorce age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea if age_c >= 12, r
 eststo `yvar'
 
@@ -445,7 +453,7 @@ eststo clear
 /* col 2 TSLS */
 //test - ivregress 2sls stdhhinc age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (divorce = girl1) if age_c <12 , vce(r) first
 
-foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
+foreach yvar of varlist stdhhinc poverty_hh nwinc inctot incwage employed wkswork1 uhrswork {
 qui ivregress 2sls `yvar' age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (divorce = girl1) if age_c <12, vce(r)
 eststo `yvar'
 
@@ -462,7 +470,7 @@ test girl1 /** 13.37 **/
 /* col 3 TSLS */
 // test ivregress 2sls stdhhinc age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (divorce = girl1) if age_c >=12, vce(r) first
 
-foreach yvar of varlist stdhhinc povertyline nwinc inctot incwage employed uhrswork wkswork1 {
+foreach yvar of varlist stdhhinc poverty_hh nwinc inctot incwage employed uhrswork wkswork1 {
 qui ivregress 2sls `yvar' age2 agemarr2 agefb2 educyrs2 ageeduc marreduc fbeduc i.bpl i.statefip i.metarea (divorce = girl1) if age_c >=12, vce(r)
 eststo `yvar'
 

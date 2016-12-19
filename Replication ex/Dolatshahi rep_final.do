@@ -11,15 +11,13 @@ set more off, permanently
 global datadir "/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empirical/Adv-empirical/Replication ex"
 global results "/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empirical/Adv-empirical/Replication ex"
 
-*log using "$results/log_replicationfull.smcl", replace
+log using "$results/log_replication.smcl", replace
 use "$datadir/usa_00005.dta", clear
 
 cd "/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empirical/Adv-empirical/Replication ex"
-/Users/Jennifer/Documents/school/NYU Wagner/16-17/Advanced Empirical/Adv-empirical/Replication ex
 
 order *, alpha
 rename *, lower
-
 
 /* # children, # adults per household */ 
 qui bysort serial: egen adults = total(age >= 18)
@@ -196,7 +194,7 @@ replace poverty_hh=172*hhincome/27229 if adults==7 & minors>=2
 replace poverty_hh=172*hhincome/22830 if adults==8 & minors==0 
 replace poverty_hh=172*hhincome/27596 if adults==8 & minors>=1 
 replace poverty_hh=172*hhincome/27463 if adults>=9 & minors>=0
-//replace poverty_hh = poverty_hh/100 
+replace poverty_hh = poverty_hh/100 
 label var poverty_hh "Household poverty"
 
 /* nonwoman income */ 

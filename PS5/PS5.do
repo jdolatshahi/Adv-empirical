@@ -42,6 +42,7 @@ eststo: xtreg fte nj after njafter, fe
 esttab * using tables5.rtf, append b(3) se(3) mtitles label title(Fixed effects regression)
 eststo clear
 
+
 // Q8 
 use safesave_slim_data.dta, clear
 
